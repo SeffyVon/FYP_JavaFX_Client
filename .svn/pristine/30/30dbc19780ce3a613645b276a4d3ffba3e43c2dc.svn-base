@@ -1,0 +1,78 @@
+package Networks;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class ReceiverThreaded implements Runnable {
+	
+	static double progress = 0;
+	static String macAddrString = "10.115.193.30";
+	static String linuxAddrString = "10.115.209.74";
+	static String localAddrString = "127.0.0.1";
+	static int serverPort = 15126;
+	static int clientPort = 15124;
+	ServerSocket serverSocket = null;
+
+	@Override
+	public void run() {
+		System.out.println("receiver comes");
+		try{
+			serverSocket = new ServerSocket(serverPort);
+			PrintWriter logWriter = new PrintWriter("resources/logFile.txt");
+			
+			Thread t = new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					Socket clientSocket = null;
+					try {
+						clientSocket = serverSocket.accept();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					BufferedReader bufferedReader = null;
+					try {
+						bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+					} catch (IOException e3) {
+						// TODO Auto-generated catch block
+						e3.printStackTrace();
+					}
+					Double double1 = null;
+					try {
+						double1 = Double.parseDouble(bufferedReader.readLine());
+					} catch (NumberFormatException | IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					ProgressBarSyn.receiveProgress(linuxAddrString,double1);
+					System.out.println("server receive:"+double1);
+					logWriter.println("server receive:"+double1);
+					try {
+						bufferedReader.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						clientSocket.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
+			});
+			t.start();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
+
+}

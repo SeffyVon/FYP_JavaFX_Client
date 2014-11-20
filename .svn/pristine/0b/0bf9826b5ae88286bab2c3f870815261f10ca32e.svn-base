@@ -1,0 +1,8 @@
+package model;
+
+public class User {
+	String bigImageLocString; 
+	String smallImageLocString;
+	String username;
+	String ipAddrString;
+}

@@ -1,0 +1,15 @@
+package model;
+
+public class User {
+	String bigImageLocString; 
+	String smallImageLocString;
+	String username;
+	String ipAddrString;
+	
+	User(String uname, String bigPicLoc, String smallPicLoc, String ipAddr){
+		username = uname;
+		ipAddrString = ipAddr;
+		bigImageLocString = bigPicLoc;
+		smallImageLocString = smallPicLoc;
+	}
+}
