@@ -117,7 +117,7 @@ public class MyController implements Initializable {
 		Image image = new Image(file.toURI().toString());
 		    
 		userImageView.setImage(image);
-		//System.out.println(unameLabel.getText());
+		System.out.println(unameLabel.getText());
 		//unameLabel.setText("doge");
 		setGListView();
 		setUListView();

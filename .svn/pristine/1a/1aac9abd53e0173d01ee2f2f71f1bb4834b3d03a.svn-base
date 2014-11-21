@@ -112,13 +112,9 @@ public class MyController implements Initializable {
                 
             }
         });
-		File file = new File("resources/pic/users/doge.jpg");
-		System.out.println(file.getAbsolutePath());
-		Image image = new Image(file.toURI().toString());
-		    
-		userImageView.setImage(image);
-		//System.out.println(unameLabel.getText());
-		//unameLabel.setText("doge");
+		
+		//userImageView.setImage(new Image("/Users/feng/Documents/workspace2/OCJavafx/resources/pic/users/cate.jpg"));
+		//unameLabel.setText(user.getUname());
 		setGListView();
 		setUListView();
 		setGroupPaneRoot(-1);
@@ -128,7 +124,7 @@ public class MyController implements Initializable {
 	
 	public void setUser(User user){
 		this.user = user;
-		unameLabel.setText(user.getUname());
+		//unameLabel.setText(user.getUname());
 	}
 	
 	public void setThisStage(Stage stage){

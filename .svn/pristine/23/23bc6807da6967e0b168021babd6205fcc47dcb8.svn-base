@@ -134,7 +134,7 @@
       </Pane>
       <Pane layoutX="641.0" prefHeight="603.0" prefWidth="164.0" style=": ;" styleClass="theme" stylesheets="@application.css">
          <children>
-            <ImageView fx:id="userImageView" fitHeight="134.0" fitWidth="137.0" layoutX="17.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="134.0" fitWidth="137.0" layoutX="17.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../resources/pic/users/doge.jpg" />
                </image>

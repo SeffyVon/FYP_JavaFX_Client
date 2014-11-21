@@ -1,5 +1,8 @@
 package Networks;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.HttpResponse;
@@ -40,8 +43,15 @@ public class GroupRequest {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getGroupsAndMovies("doge"));
+		//System.out.println(getGroupsAndMovies("doge"));
 		System.out.println(getGroupMems("doge"));
+		JSONObject jsonObject= getGroupMems("doge");
+		ArrayList<String> groupNameArrayList = new ArrayList<String>();
+		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
+			groupNameArrayList.add(iterator.next().toString());
+		}
+		
+		
 		System.out.println("ohh");
 	}
 }

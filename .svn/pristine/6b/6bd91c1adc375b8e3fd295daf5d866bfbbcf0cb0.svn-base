@@ -31,7 +31,7 @@ public class UData {
 	public void setInfo(String string){
 	   label1.setText(string);
 	   File file = new File("resources/pic/users/"+string+".jpg");
-		//System.out.println(file.getAbsolutePath());
+		System.out.println(file.getAbsolutePath());
 		Image image = new Image(file.toURI().toString());
 		    
 		unamePicImageView.setImage(image);

@@ -35,7 +35,7 @@
                               </Label>
                               <ImageView fx:id="movieOwnerImageView" fitHeight="49.0" fitWidth="51.0" layoutX="504.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../resources/pic/littlebaby1.jpeg" />
+                                    <Image url="@../../resources/pic/users/user2.jpg" />
                                  </image>
                               </ImageView>
                               <Label layoutX="422.0" layoutY="30.0" text="shared by:" />
@@ -134,9 +134,9 @@
       </Pane>
       <Pane layoutX="641.0" prefHeight="603.0" prefWidth="164.0" style=": ;" styleClass="theme" stylesheets="@application.css">
          <children>
-            <ImageView fitHeight="134.0" fitWidth="137.0" layoutX="17.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="userImageView" fitHeight="134.0" fitWidth="137.0" layoutX="17.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../resources/pic/scaled.jpg" />
+                  <Image url="@../../resources/pic/users/doge.jpg" />
                </image>
             </ImageView>
             <VBox alignment="TOP_CENTER" layoutX="24.0" layoutY="256.0" prefHeight="200.0" prefWidth="119.0" spacing="20.0" stylesheets="@application.css">
@@ -174,7 +174,7 @@
                   <Insets top="1.0" />
                </padding>
             </VBox>
-            <Label layoutX="35.0" layoutY="193.0" text="Little Baby" textFill="#fffcfc">
+            <Label fx:id="unameLabel" layoutX="35.0" layoutY="193.0" text="Little Baby" textFill="#fffcfc">
                <font>
                   <Font name="Calibri Bold" size="22.0" />
                </font>

@@ -112,12 +112,9 @@ public class MyController implements Initializable {
                 
             }
         });
-		File file = new File("resources/pic/users/doge.jpg");
-		System.out.println(file.getAbsolutePath());
-		Image image = new Image(file.toURI().toString());
-		    
-		userImageView.setImage(image);
-		//System.out.println(unameLabel.getText());
+		
+		//userImageView.setImage(new Image("/Users/feng/Documents/workspace2/OCJavafx/resources/pic/users/cate.jpg"));
+		System.out.println(unameLabel.getText());
 		//unameLabel.setText("doge");
 		setGListView();
 		setUListView();
