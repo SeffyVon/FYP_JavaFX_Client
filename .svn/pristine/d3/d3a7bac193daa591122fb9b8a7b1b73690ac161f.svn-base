@@ -1,0 +1,65 @@
+package udp;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
+public class UDPSender {
+	
+	protected DatagramSocket socket = null;
+	static PrintWriter logWriter = null;
+    private long FIVE_SECONDS = 5000;
+    int port = 4447;
+    String host = "230.0.0.1";
+	public UDPSender() {
+		try {
+			socket = new DatagramSocket(port);
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		}
+
+	}
+	
+	public void send(double progressNum) throws UnknownHostException{
+		byte[] buf = new byte[256];
+
+	    // send it
+        InetAddress group;
+		try {
+			group = InetAddress.getByName(host);
+			buf = String.valueOf(progressNum).getBytes();
+			
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, group, port);
+			System.out.println("send:"+progressNum);
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+      
+	}
+	public static void main (String [] args ){
+		UDPSender sender = new UDPSender();
+		try {
+			
+			while(true){
+				sender.send(12.2);
+		
+				sender.send(12.30);
+	
+				sender.send(13.30);
+			}
+			
+		} catch ( Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//new Sender(12.02);
+		System.out.println("sender closes!!!!");
+		
+	}
+	
+}
