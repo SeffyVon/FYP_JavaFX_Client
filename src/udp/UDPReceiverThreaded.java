@@ -1,14 +1,13 @@
 package udp;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketException;
+
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialogs;
 
 import tcp.ProgressBarSyn;
 import config.Config;
@@ -36,7 +35,7 @@ public class UDPReceiverThreaded extends Thread{
       
 
 	}
-    
+    @Override
 	public void run() {
 		DatagramPacket packet = null;
 		while(true){
@@ -53,13 +52,19 @@ public class UDPReceiverThreaded extends Thread{
 	            System.out.println("receive");
 	            
 	            System.out.println(received);
-	            double progressDouble = Double.parseDouble(received);
-	            ProgressBarSyn.receiveProgress(Config.otherAddrString,progressDouble);
-	            System.out.println("server receive and set progress:"+progressDouble);
+	            
+	            if(received.startsWith("DOWNLOAD")){
+
+	            }else{
+	            	double progressDouble = Double.parseDouble(received);
+	            	ProgressBarSyn.receiveProgress(Config.otherAddrString,progressDouble);
+	            }
+	            
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
+
 	}
 }

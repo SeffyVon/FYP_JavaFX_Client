@@ -14,13 +14,12 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="603.0" prefWidth="805.0" styleClass="theme" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MyController">
    <children>
       <FlowPane layoutX="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="627.0" />
-      <Pane id="MovieTape" fx:id="leftPane" layoutX="15.0" prefHeight="1800.0" prefWidth="627.0" stylesheets="@application.css">
+      <Pane id="MovieTape" fx:id="leftPane" layoutX="15.0" layoutY="-1200.0" prefHeight="2400.0" prefWidth="627.0" stylesheets="@application.css">
          <children>
             <FlowPane alignment="TOP_CENTER" layoutX="28.0" layoutY="9.0" prefHeight="590.0" prefWidth="579.0" styleClass="groupScene" stylesheets="@application.css">
                <children>
-                  <Button id="leftArrow" fx:id="topLeftScrollButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="31.0" stylesheets="@application.css" />
-                  <ListView fx:id="GListView" orientation="HORIZONTAL" prefHeight="150.0" prefWidth="507.0" stylesheets="@application.css" />
-                  <Button id="rightArrow" fx:id="topRightScrollButton" mnemonicParsing="false" prefHeight="37.0" prefWidth="30.0" stylesheets="@application.css" />
+                  <ListView fx:id="GListView" orientation="HORIZONTAL" prefHeight="153.0" prefWidth="504.0" stylesheets="@application.css" />
+                  <Button id="rightArrow" fx:id="addGroupButton" mnemonicParsing="false" prefHeight="56.0" prefWidth="67.0" stylesheets="@application.css" />
                   <BorderPane fx:id="moviePane" prefHeight="353.0" prefWidth="579.0" styleClass="cinemaPane" stylesheets="@application.css">
                      <top>
                         <Pane prefHeight="59.0" prefWidth="556.0" styleClass="cinemaPane" stylesheets="@application.css">
@@ -38,7 +37,7 @@
                                     <Image url="@../../resources/pic/users/user2.jpg" />
                                  </image>
                               </ImageView>
-                              <Label layoutX="422.0" layoutY="30.0" text="shared by:" />
+                              <Label fx:id="shareByLabel" layoutX="422.0" layoutY="30.0" text="shared by:" />
                            </children>
                         </Pane>
                      </top>
@@ -69,51 +68,32 @@
                               </TextArea>
                               <HBox alignment="CENTER" layoutX="29.0" layoutY="224.0" prefHeight="56.0" prefWidth="277.0" spacing="20.0">
                                  <children>
-                                    <Button fx:id="watchButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="115.0" text="WATCH">
+                                    <Button fx:id="watchButton" mnemonicParsing="false" prefHeight="32.0" prefWidth="158.0" text="WATCH">
                                        <effect>
                                           <InnerShadow />
                                        </effect>
                                     </Button>
                                  </children>
                               </HBox>
-                              <Label layoutX="14.0" layoutY="193.0" text="Watch Time:" />
+                              <Label fx:id="watchTimeLabel" layoutX="14.0" layoutY="193.0" text="Watch Time:" />
                               <Label fx:id="startTLabel" layoutX="96.0" layoutY="184.0" prefHeight="35.0" prefWidth="71.0" styleClass="dateLabel" stylesheets="@application.css" text="2014-11-11" />
-                              <Label layoutX="184.0" layoutY="193.0" text="to" />
+                              <Label fx:id="toLabel" layoutX="184.0" layoutY="193.0" text="to" />
                               <Label fx:id="endTLabel" layoutX="212.0" layoutY="183.0" prefHeight="36.0" prefWidth="71.0" styleClass="dateLabel" stylesheets="@application.css" text="2014-11-12" />
-                              <Label layoutX="14.0" layoutY="153.0" text="Rating:" />
-                              <ImageView fitHeight="27.0" fitWidth="20.0" layoutX="66.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
+                              <Label fx:id="ratingLabel" layoutX="14.0" layoutY="153.0" text="Rating:" />
+                              <ImageView fx:id="movieStarImageView" fitHeight="20.0" fitWidth="104.0" layoutX="57.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../resources/pic/images.jpg" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="27.0" fitWidth="20.0" layoutX="86.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../resources/pic/images.jpg" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="19.0" fitWidth="20.0" layoutX="106.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../resources/pic/images.jpg" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="27.0" fitWidth="20.0" layoutX="126.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../resources/pic/images.jpg" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="27.0" fitWidth="20.0" layoutX="146.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../resources/pic/images.jpg" />
+                                    <Image url="@../../resources/pic/stars/5stars.png" />
                                  </image>
                               </ImageView>
                            </children>
                         </Pane>
                      </center>
                   </BorderPane>
-                  <ListView fx:id="UListView" orientation="HORIZONTAL" prefHeight="85.0" prefWidth="565.0" styleClass="groupScene" stylesheets="@application.css" />
+                  <ListView fx:id="UListView" orientation="HORIZONTAL" prefHeight="87.0" prefWidth="511.0" styleClass="groupScene" stylesheets="@application.css" />
+                  <Button id="rightArrow" fx:id="addUserButton" mnemonicParsing="false" prefHeight="54.0" prefWidth="59.0" stylesheets="@application.css" />
                </children>
             </FlowPane>
-            <Pane layoutX="25.0" layoutY="610.0" prefHeight="590.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
+            <Pane layoutX="25.0" layoutY="610.0" prefHeight="600.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
                <children>
                   <MediaView fx:id="mediaView" fitHeight="300.0" fitWidth="512.0" layoutX="37.0" layoutY="93.0" />
                   <Slider fx:id="timeSlider" layoutX="35.0" layoutY="457.0" prefHeight="15.0" prefWidth="521.0" />
@@ -121,15 +101,47 @@
                   <Slider fx:id="volumeSlider" layoutX="176.0" layoutY="492.0" prefHeight="15.0" prefWidth="232.0" />
                   <Button id="volumeButton" layoutX="120.0" layoutY="482.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="31.0" />
                </children>
-               <effect>
-                  <Lighting bumpInput="$null">
-                     <light>
-                        <Light.Distant />
-                     </light>
-                  </Lighting>
-               </effect>
             </Pane>
-            <Pane layoutX="25.0" layoutY="1208.0" prefHeight="590.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css" />
+            <Pane fx:id="messagePane" layoutX="25.0" layoutY="1210.0" prefHeight="590.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
+               <children>
+                  <SplitPane dividerPositions="0.3352272727272727" layoutX="15.0" layoutY="17.0" prefHeight="546.0" prefWidth="530.0">
+                    <items>
+                        <Accordion>
+                          <panes>
+                            <TitledPane fx:id="groupAccordion" animated="false" text="group1" />
+                            <TitledPane animated="false" text="group2" />
+                          </panes>
+                        </Accordion>
+                        <VBox>
+                           <children>
+                              <ListView prefHeight="526.0" prefWidth="347.0" />
+                              <HBox>
+                                 <children>
+                                    <TextFlow prefHeight="26.0" prefWidth="301.0" />
+                                    <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="SEND" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                    </items>
+                  </SplitPane>
+               </children></Pane>
+            <Pane fx:id="messagePane1" layoutX="25.0" layoutY="1810.0" prefHeight="590.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="143.0" layoutY="29.0" prefHeight="34.0" prefWidth="299.0" text="Setting" textAlignment="CENTER" textFill="#cdc8c8">
+                     <font>
+                        <Font size="31.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="userImageView1" fitHeight="119.0" fitWidth="109.0" layoutX="46.0" layoutY="95.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/pic/users/doge.jpg" />
+                     </image>
+                  </ImageView>
+                  <Label layoutX="213.0" layoutY="95.0" text="Name:" />
+                  <TextField layoutX="276.0" layoutY="98.0" />
+               </children>
+            </Pane>
          </children>
       </Pane>
       <Pane layoutX="641.0" prefHeight="603.0" prefWidth="164.0" style=": ;" styleClass="theme" stylesheets="@application.css">
@@ -164,11 +176,6 @@
                         <InnerShadow />
                      </effect>
                   </Button>
-                  <Button fx:id="logoutButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="97.0" styleClass="rightVbox" stylesheets="@application.css" text="LOG OUT">
-                     <effect>
-                        <InnerShadow />
-                     </effect>
-                  </Button>
                </children>
                <padding>
                   <Insets top="1.0" />
@@ -179,6 +186,8 @@
                   <Font name="Calibri Bold" size="22.0" />
                </font>
             </Label>
+            <ProgressBar fx:id="networkProgressBar" layoutX="13.0" layoutY="497.0" prefHeight="15.0" prefWidth="141.0" progress="0.0" />
+            <Label fx:id="downloadingLabel" layoutX="17.0" layoutY="481.0" text="Dowloading ..." textFill="#bcb1b1" />
          </children>
       </Pane>
    </children>

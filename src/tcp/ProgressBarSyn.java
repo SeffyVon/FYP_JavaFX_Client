@@ -43,7 +43,7 @@ public class ProgressBarSyn {
 
 				@Override
 				public void run() {
-					
+					System.out.println("server receive and set progress:"+progress0);
 					Duration duration = mediaPlayer.getMedia().getDuration();
                 	mediaPlayer.seek(duration.multiply(progress0 / 100.0));
 					

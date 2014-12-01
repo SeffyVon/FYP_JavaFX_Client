@@ -52,6 +52,7 @@
 }
 
 /* for showing the group and the group member */
+
 .groupScrollView
 {
 	-fx-background-color: black;
@@ -68,6 +69,7 @@
 	-fx-background-color:transparent;
 	-fx-opacity:0;
 }
+
 /*http://blog.ngopal.com.np/2012/07/11/customize-scrollbar-via-css/*/
 
 /* for the scroll view */
@@ -115,7 +117,7 @@
 
 #rightArrow
 {
-	-fx-background-image:url("../../resources/pic/right_arrow.png") no-repeat;
+	-fx-background-image:url("../../resources/pic/add.png") no-repeat;
 	-fx-border-color: black;
 	-fx-background-color:black;
 }

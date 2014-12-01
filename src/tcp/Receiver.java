@@ -7,6 +7,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialogs;
+
 public class Receiver {
 	
 	static double progress = 0;

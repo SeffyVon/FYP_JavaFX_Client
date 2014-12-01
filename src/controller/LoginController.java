@@ -6,19 +6,21 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
-import tcp.UserRequest;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.User;
+import tcp.UserRequest;
 import config.Config;
 
 public class LoginController implements Initializable{
@@ -26,7 +28,7 @@ public class LoginController implements Initializable{
 	@FXML
 	private TextField unameField;
 	@FXML
-	private TextField pwordField;	
+	private PasswordField pwordField;	
 	@FXML
 	private Button loginButton;
 	@FXML
@@ -60,6 +62,7 @@ public class LoginController implements Initializable{
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
+	            primaryStage.getScene().setCursor(Cursor.WAIT);
 	            System.out.println("You pressed login Button.");
 	            String uname = unameField.getText();
 	            String pword = pwordField.getText();
@@ -74,6 +77,9 @@ public class LoginController implements Initializable{
 						myController.setUser(new User(uname,Config.localAddrString));
 						myController.prepareGroups();
 						myController.setGListView();
+						primaryStage.setX(200);
+						primaryStage.setY(50);
+						primaryStage.getScene().setCursor(Cursor.DEFAULT);
 						myController.setThisStage(primaryStage);
 					} catch (IOException e) {
 						e.printStackTrace();

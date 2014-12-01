@@ -1,9 +1,0 @@
-package udp;
-
-import java.io.IOException;
-
-public class UDPReceiver {
-	 public static void main(String[] args) throws IOException {
-		new UDPReceiverThreaded().start();
-	}
-}

@@ -2,27 +2,37 @@ package controller;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -32,15 +42,20 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import model.Group;
 import model.Movie;
 import model.User;
 
+import org.apache.http.annotation.ThreadSafe;
+import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ProgressDialog;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import tcp.FileReceiver;
 import tcp.GroupRequest;
 import tcp.ProgressBarSyn;
 import view.GCell;
@@ -91,12 +106,40 @@ public class MyController implements Initializable {
 	private ImageView userImageView;
 	@FXML
 	private Label unameLabel;
-	
+	@FXML
+	private ProgressBar networkProgressBar;
+	@FXML
+	private Label downloadingLabel;
+	@FXML
+	private Button addGroupButton;
+	@FXML
+	private Button addUserButton;
+	@FXML
+	private ImageView movieStarImageView;
+	@FXML
+	private Label ratingLabel;
+	@FXML
+	private Label watchTimeLabel;
+	@FXML
+	private Label toLabel;	
+	@FXML
+	private Label shareByLabel;
+	@FXML
+	private Accordion groupAccordion;
+
+ 	
 	Stage primaryStage;
+	
 	MediaPlayer mp;
-	int groupNum = 0;
+	File currentVideoFile = null;
+	
+	String currentGroupName = null;
 	
 	User user = null;
+	Movie currentMovie = null;
+	private HashMap<String, Group> groupMap = new HashMap<String, Group>();
+	private HashMap<String, User> userMap = new HashMap<String, User>();
+	
 	
 	private Set<String> gStringSet = new HashSet<String>();
 	ObservableList observableList = FXCollections.observableArrayList();
@@ -104,7 +147,7 @@ public class MyController implements Initializable {
 	private Set<String> uStringSet = new HashSet<String>();
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
 	
-	private HashMap<String, Group> groupMap = new HashMap<String, Group>();
+	
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -112,29 +155,106 @@ public class MyController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("You pressed group Button.");
-                MovieToGroupPane();
+                toGroupPane();
             }
         });
 		
 		movieButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("You pressed message Button.");
-                GroupToMoviePane();
-                
+            	if(watchButton.getText()!="WATCH"){
+            		System.out.println("This group doesn't have a movie yet!");
+            	}else{
+	                System.out.println("You pressed movie Button.");
+	                toMoviePane();
+            	}
             }
         });
+		
+		watchButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	System.out.println(watchButton.getText());
+	        	if(watchButton.getText()=="ADD NOW!"){
+	        		addMovie();
+	        	}else if(watchButton.getText()=="DOWNLOAD"){//DOWNLOAD
+					receiveFromUser();
+	        	}else{//WATCH
+	        		setMovieMediaPane();
+	        		toMoviePane();
+	        	}
+	        }
+		});
+		
+		messageButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	toMessagePane();
+	        }
+
+		});
+		
+		settingButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	toSettingPane();
+	        }
+
+		});
+		
+		
+		addGroupButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	System.out.println("add group");
+	        }
+		});
+		
+		addUserButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	System.out.println("add user");
+	        }
+		});
+		
 		File file = new File("resources/pic/users/doge.jpg");
 		System.out.println(file.getAbsolutePath());
 		Image image = new Image(file.toURI().toString());
 		    
 		userImageView.setImage(image);
+		downloadingLabel.setVisible(false);
+		networkProgressBar.setVisible(false);
+		setLabelVisibility(false);
 		System.out.println(unameLabel.getText());
-		//unameLabel.setText("doge");
-		//prepareGroups();
-		setMoviePane(null);
+		setMoviePane();
+		toGroupPane();
 		
 	
+	}
+	
+	public void setLabelVisibility(boolean visible){
+		if(visible){
+			moviePosterImageView.setVisible(true);
+			movieOwnerImageView.setVisible(true);
+			ratingLabel.setVisible(true);
+			watchTimeLabel.setVisible(true);
+			toLabel.setVisible(true);
+			movieStarImageView.setVisible(true);
+			startTLabel.setVisible(true);
+			endTLabel.setVisible(true);
+			shareByLabel.setVisible(true);
+		}else{
+			moviePosterImageView.setVisible(false);
+			movieOwnerImageView.setVisible(false);
+			ratingLabel.setVisible(false);
+			watchTimeLabel.setVisible(false);
+			toLabel.setVisible(false);
+			movieStarImageView.setVisible(false);
+			startTLabel.setVisible(false);
+			endTLabel.setVisible(false);
+			shareByLabel.setVisible(false);
+			
+		}
 	}
 	
 	public void setUser(User user){
@@ -147,14 +267,22 @@ public class MyController implements Initializable {
 	}
 	
 	
-	protected void GroupToMoviePane() {
+	protected void toMoviePane() {
 		leftPane.setLayoutY(-600);
 		
 	}
 
-	protected void MovieToGroupPane() {
+	protected void toGroupPane() {
 		leftPane.setLayoutY(0);		
 		
+	}
+	
+	void toMessagePane(){
+		leftPane.setLayoutY(-1200);
+	}
+	
+	void toSettingPane(){
+		leftPane.setLayoutY(-1800);
 	}
 	
 	void prepareGroups(){
@@ -182,8 +310,10 @@ public class MyController implements Initializable {
 			ArrayList<User> userArrayList = new ArrayList<User>();
 			for(int i=0;i<userJsonArray.length();i++){
 				JSONObject userJsonObject = userJsonArray.getJSONObject(i);
-				userArrayList.add(new User(userJsonObject.getString("uname"), userJsonObject.getString("ipAddr")));
-
+				User user = new User(userJsonObject.getString("uname"), userJsonObject.getString("ipAddr"));
+				userArrayList.add(user);
+				if(!userMap.containsKey(user.getUname()))
+					userMap.put(user.getUname(), user);
 			}
 			Group group = new Group(groupName, userArrayList, movie);
 			groupMap.put(groupName, group);
@@ -193,54 +323,107 @@ public class MyController implements Initializable {
 
 	}
 	public void noMovie() {
+		setLabelVisibility(false);
 		movieTitleLabel.setText("");
 		movieBriefTextArea.setText("");
 		startTLabel.setText("");
 		endTLabel.setText("");
-		moviePosterImageView.setVisible(false);
-		movieOwnerImageView.setVisible(false);
 		watchButton.setText("ADD NOW!");
+	}
+	//http://code.makery.ch/blog/javafx-8-dialogs/
+	void addMovie(){
+		System.out.println("at add movie");
+
+		//TextInputDialog movieInputDialog= new TextInputDialog();
+//		Dialogs.create()
+//        .owner(primaryStage)
+//        .title("Information Dialog")
+//        .masthead("Look, an Information Dialog")
+//        .message("I have a great message for you!")
+//        .showInformation();
+		
+		Optional<String> response = Dialogs.create()
+		        .owner(primaryStage)
+		        .title("Add a movie")
+		        .masthead("Add a movie to your group")
+		        .message("movie name")
+		        .showTextInput("walter");
+		
 	}
 	
 	
-	void setMoviePane(String groupName){
-		if(groupName == null){
+	void downloadRequest(){
+		System.out.println("at download Request");
+
+		Alert dlg = createAlert(AlertType.CONFIRMATION);
+		dlg.setTitle("Someone asks you to send them a video file!");
+        dlg.show();
+  
+	}
+	
+	private Alert createAlert(AlertType type) {
+        Window owner = primaryStage;
+        Alert dlg = new Alert(type, "");
+        dlg.initOwner(owner);
+        return dlg;
+    }
+	
+	void setMoviePane(){
+
+		if(currentGroupName == null){
 			noMovie();
 			return;
 		}
 		
-		Movie movie = groupMap.get(groupName).getMovie();
-		if( movie == null){
+		currentMovie = groupMap.get(currentGroupName).getMovie();
+		
+		if( currentMovie == null){
 			noMovie();
 			
 		}else{
-			movieTitleLabel.setText(movie.getMovieNameString());
-			movieBriefTextArea.setText(movie.getMovieBriefString());
-			startTLabel.setText(movie.getStartTimeString());
-			endTLabel.setText(movie.getEndTimeString());
+
+			movieTitleLabel.setText(currentMovie.getMovieNameString());
+			movieBriefTextArea.setText(currentMovie.getMovieBriefString());
+			startTLabel.setText(currentMovie.getStartTimeString());
+			endTLabel.setText(currentMovie.getEndTimeString());
 			
-			moviePosterImageView.setVisible(true);
-			movieOwnerImageView.setVisible(true);
-			
-			File file = new File("resources/pic/poster/"+movie.getMovieFileNameString()+".jpg");
+			File file = new File("resources/pic/poster/"+currentMovie.getMovieFileNameString()+".jpg");
 	        Image image = new Image(file.toURI().toString());
 			moviePosterImageView.setImage(image);
 			
-			File file2 = new File("resources/pic/users/"+movie.getOwnerNameString()+".jpg");
+			File file2 = new File("resources/pic/users/"+currentMovie.getOwnerNameString()+".jpg");
 	        Image image2 = new Image(file2.toURI().toString());			
 			movieOwnerImageView.setImage(image2);
 			
-			watchButton.setText("WATCH");
+			setLabelVisibility(true);
 			
-			File file3 = new File("resources/video/2011-Mobile.mp4");
-			String movieURL = file3.toURI().toString();
-			setMovieMediaPane( movieURL);
-			
+			Path path = Paths.get("resources/video/"+currentMovie.getMovieFileNameString()+".mp4");
+			if (!Files.exists(path)) {
+				watchButton.setText("DOWNLOAD");
+			}else{
+				watchButton.setText("WATCH");
+			}
 		}
 	}
 	
+	void receiveFromUser(){
+		String ipAddrString = "127.0.0.1";        
+		FileReceiver fileReceiver = new FileReceiver();
+		System.out.println("receive from ip");
+		Platform.runLater(new Runnable(){
 
+			@Override
+			public void run() {
+				downloadingLabel.setVisible(true);
+				networkProgressBar.setVisible(true);
+			}
+			
+		});
+		fileReceiver.receiveFromIP(ipAddrString, currentMovie.getMovieFileNameString(), downloadingLabel, networkProgressBar);
+		
+	}
 
+	@SuppressWarnings("unchecked")
 	void setGListView(){
 		JSONObject jsonObject= GroupRequest.getGroupMems(user.getUname());
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
@@ -260,22 +443,22 @@ public class MyController implements Initializable {
 	    // Handle ListView selection changes.
 	    // http://code.makery.ch/blog/javafx-8-event-handling-examples/
 	    GListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-	        System.out.println("ListView Selection Changed (selected: " + newValue.toString() + ")");
-	        int selectedIndex = GListView.getSelectionModel().getSelectedIndex();
-	        System.out.println("selectedIndex:"+selectedIndex);
-			setUListView(newValue.toString());
-			setMoviePane(newValue.toString());
+	        
+	    	currentGroupName = newValue.toString();
+	     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
+	        int groupNum = GListView.getSelectionModel().getSelectedIndex();
+	        System.out.println("selected Group:"+groupNum);
+	        
+			setUListView();
+			setMoviePane();
 	        
 	    });
 	}
 	
-	void setUListView(String groupName){
-		
-		Group group = groupMap.get(groupName);
+	void setUListView(){	
+		Group group = groupMap.get(currentGroupName);
 		ArrayList<User> userList = group.getUserList();
-		
-		//uStringSet.add("doge");
-	   // uStringSet.add("cate");
+
 	    observableList2.setAll(userList);
 	    UListView.setItems(observableList2);
 	    UListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
@@ -286,16 +469,17 @@ public class MyController implements Initializable {
 	    });
 	}
 	
-	void setMovieMediaPane(String movieAddress){
+	@SuppressWarnings("unchecked")
+	void setMovieMediaPane(){
 	
-		Media mv = new Media(movieAddress);
+		Media mv = new Media(new File("resources/video/"+currentMovie.getMovieFileNameString()+".mp4").toURI().toString());
 		MediaPlayer mp = new MediaPlayer(mv);
 		mp.setAutoPlay(false);
 		
         volumeSlider.setValue(80);
         mp.setVolume(0.8);
 		mediaView.setMediaPlayer(mp);
-	//	mp.setCycleCount(MediaPlayer.INDEFINITE);
+
 		ProgressBarSyn progressBarSyn = new ProgressBarSyn();
 		progressBarSyn.setMediaPlayer(mp);
 		
@@ -319,7 +503,15 @@ public class MyController implements Initializable {
 		          if (!timeSlider.isDisabled() 
 		            && duration.greaterThan(Duration.ZERO) 
 		            && !timeSlider.isValueChanging()) {
-		              timeSlider.setValue(currentTime/duration.toSeconds()* 100.0);
+		        	  Platform.runLater(new Runnable(){
+
+						@Override
+						public void run() {
+							 timeSlider.setValue(currentTime/duration.toSeconds()* 100.0);
+						}
+		        		  
+		        	  });
+		             
 		          }
 				
 			}
@@ -348,6 +540,7 @@ public class MyController implements Initializable {
 	                playButton.setText("Play");
 	                mp.pause();
             	}else{
+            		
 	                System.out.println("You pressed Play Button.");
 	                playButton.setText("Pause");
 	                playButton.setGraphic(new ImageView(imagePause));

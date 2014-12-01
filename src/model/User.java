@@ -11,6 +11,9 @@ public class User {
 		this.ipAddrString = ipAddrString;
 
 	}
+	public String getIpAddrString(){
+		return ipAddrString;
+	}
 	
 	public String getBigImageLocString(){
 		return bigImageLocString;
