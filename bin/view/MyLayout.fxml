@@ -109,10 +109,15 @@
                         <TreeView fx:id="groupTreeView" maxWidth="150.0" prefHeight="200.0" prefWidth="200.0" />
                         <VBox>
                            <children>
-                              <ListView minWidth="350.0" prefHeight="526.0" prefWidth="347.0" stylesheets="@application.css" />
+                              <TitledPane fx:id="chatTitledPane" alignment="CENTER" collapsible="false" contentDisplay="CENTER" text="Messages with">
+                                 <content>
+                                    <ListView id="chatPanel" fx:id="chatListView" minWidth="350.0" prefHeight="526.0" prefWidth="347.0" stylesheets="@application.css" />
+                                 </content>
+                              </TitledPane>
+                              <Region prefHeight="19.0" prefWidth="373.0" />
                               <HBox minWidth="350.0">
                                  <children>
-                                    <TextFlow prefHeight="26.0" prefWidth="301.0" />
+                                    <TextFlow prefHeight="26.0" prefWidth="330.0" textAlignment="CENTER" />
                                     <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="SEND" />
                                  </children>
                               </HBox>
