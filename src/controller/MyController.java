@@ -21,6 +21,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -230,11 +231,10 @@ public class MyController implements Initializable {
 		System.out.println(unameLabel.getText());
 		setMoviePane();
 		toGroupPane();
-		prepareTreeView();
 	
 	}
 	
-	public void prepareTreeView(){
+	public void setTreeView(){
 		Platform.runLater(new Runnable() {
 			
 			@Override
@@ -249,7 +249,7 @@ public class MyController implements Initializable {
 					Group group = groupMap.get(groupName);
 					ArrayList<User> userList = group.getUserList();
 					for(User user:userList){
-						TreeItem<String> userTreeItem = new TreeItem<>(user.getUname(),new ImageView(user.getSmallImage()));
+						TreeItem<String> userTreeItem = new TreeItem<>(user.getUname(),user.getSmallImageView());
 						groupNodeItem.getChildren().add(userTreeItem);
 					}
 					treeItemRoot.getChildren().add(groupNodeItem);
@@ -348,8 +348,8 @@ public class MyController implements Initializable {
 			Group group = new Group(groupName, userArrayList, movie);	
 			groupMap.put(groupName, group);
 		}
-
-		 
+	
+		setTreeView();
 
 	}
 	public void noMovie() {
@@ -455,48 +455,65 @@ public class MyController implements Initializable {
 
 	@SuppressWarnings("unchecked")
 	void setGListView(){
-		JSONObject jsonObject= GroupRequest.getGroupMems(user.getUname());
-		ArrayList<String> groupNameArrayList = new ArrayList<String>();
-		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
-			groupNameArrayList.add(iterator.next().toString());
-		}
 		
-	    observableList.setAll(groupNameArrayList);
-	    GListView.setItems(observableList);
-	    GListView.setCellFactory(new Callback<ListView<String>,ListCell<String>>() {
-	        @Override
-	        public ListCell<String> call(ListView<String> GListView) {
-	            return new GCell();
-	        }
-	    });
-	    
-	    // Handle ListView selection changes.
-	    // http://code.makery.ch/blog/javafx-8-event-handling-examples/
-	    GListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-	        
-	    	currentGroupName = newValue.toString();
-	     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
-	        int groupNum = GListView.getSelectionModel().getSelectedIndex();
-	        System.out.println("selected Group:"+groupNum);
-	        
-			setUListView();
-			setMoviePane();
-	        
-	    });
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				JSONObject jsonObject= GroupRequest.getGroupMems(user.getUname());
+				ArrayList<String> groupNameArrayList = new ArrayList<String>();
+				for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
+					groupNameArrayList.add(iterator.next().toString());
+				}
+				
+			    observableList.setAll(groupNameArrayList);
+			    GListView.setItems(observableList);
+			    GListView.setCellFactory(new Callback<ListView<String>,ListCell<String>>() {
+			        @Override
+			        public ListCell<String> call(ListView<String> GListView) {
+			            return new GCell();
+			        }
+			    });
+			    
+			    // Handle ListView selection changes.
+			    // http://code.makery.ch/blog/javafx-8-event-handling-examples/
+			    GListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			        
+			    	currentGroupName = newValue.toString();
+			     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
+			        int groupNum = GListView.getSelectionModel().getSelectedIndex();
+			        System.out.println("selected Group:"+groupNum);
+			        
+					setUListView();
+					setMoviePane();
+			        
+			    });
+				
+			}
+		});
+		
+	
 	}
 	
 	void setUListView(){	
-		Group group = groupMap.get(currentGroupName);
-		ArrayList<User> userList = group.getUserList();
+		
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Group group = groupMap.get(currentGroupName);
+				ArrayList<User> userList = group.getUserList();
 
-	    observableList2.setAll(userList);
-	    UListView.setItems(observableList2);
-	    UListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
-	        @Override
-	        public ListCell<User> call(ListView<User> UListView) {
-	            return new UCell();
-	        }
-	    });
+			    observableList2.setAll(userList);
+			    UListView.setItems(observableList2);
+			    UListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
+			        @Override
+			        public ListCell<User> call(ListView<User> UListView) {
+			            return new UCell();
+			        }
+			    });
+			}
+		});
+
 	}
 	
 	@SuppressWarnings("unchecked")

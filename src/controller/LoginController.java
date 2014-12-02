@@ -77,6 +77,7 @@ public class LoginController implements Initializable{
 						myController.setUser(new User(uname,Config.localAddrString));
 						myController.prepareGroups();
 						myController.setGListView();
+
 						primaryStage.setX(200);
 						primaryStage.setY(50);
 						primaryStage.getScene().setCursor(Cursor.DEFAULT);

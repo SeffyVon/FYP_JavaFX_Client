@@ -149,4 +149,8 @@
     -fx-background-insets: 0, 1, 2;
 }
 
+#chatPanel{
+	-fx-background-color: white;
+}
+
 

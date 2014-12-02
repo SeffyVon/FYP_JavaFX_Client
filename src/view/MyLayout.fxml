@@ -104,15 +104,20 @@
             </Pane>
             <Pane fx:id="messagePane" layoutX="25.0" layoutY="1210.0" prefHeight="590.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
                <children>
-                  <SplitPane dividerPositions="0.5" layoutX="15.0" layoutY="17.0" prefHeight="546.0" prefWidth="530.0">
+                  <SplitPane dividerPositions="0.2859848484848485" layoutX="15.0" layoutY="17.0" prefHeight="546.0" prefWidth="530.0">
                     <items>
-                        <TreeView fx:id="groupTreeView" prefHeight="200.0" prefWidth="200.0" />
+                        <TreeView fx:id="groupTreeView" maxWidth="150.0" prefHeight="200.0" prefWidth="200.0" />
                         <VBox>
                            <children>
-                              <ListView prefHeight="526.0" prefWidth="347.0" />
-                              <HBox>
+                              <TitledPane alignment="CENTER" collapsible="false" contentDisplay="CENTER" text="Messages with">
+                                 <content>
+                                    <ListView id="chatPanel" minWidth="350.0" prefHeight="526.0" prefWidth="347.0" stylesheets="@application.css" />
+                                 </content>
+                              </TitledPane>
+                              <Region prefHeight="19.0" prefWidth="373.0" />
+                              <HBox minWidth="350.0">
                                  <children>
-                                    <TextFlow prefHeight="26.0" prefWidth="301.0" />
+                                    <TextFlow prefHeight="26.0" prefWidth="330.0" textAlignment="CENTER" />
                                     <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="SEND" />
                                  </children>
                               </HBox>

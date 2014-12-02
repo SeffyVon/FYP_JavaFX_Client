@@ -30,7 +30,8 @@ public class UData {
 	}
 	
 	public void setInfo(User user){
-		unamePicImageView.setImage(user.getSmallImage());
+		label1.setText(user.getUname());
+		unamePicImageView.setImage(user.getMiddleImage());
 	}
 	
 	public VBox getBox() {
