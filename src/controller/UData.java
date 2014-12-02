@@ -30,11 +30,7 @@ public class UData {
 	}
 	
 	public void setInfo(User user){
-	   label1.setText(user.getUname());
-	   File file = new File("resources/pic/users/"+user.getUname()+".jpg");
-	   Image image = new Image(file.toURI().toString());
-		    
-		unamePicImageView.setImage(image);
+		unamePicImageView.setImage(user.getSmallImage());
 	}
 	
 	public VBox getBox() {
