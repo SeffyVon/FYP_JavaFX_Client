@@ -149,8 +149,13 @@
     -fx-background-insets: 0, 1, 2;
 }
 
-#chatPanel{
+#chatPanel {
 	-fx-background-color: white;
 }
+
+#chatPanel .list-cell{
+	-fx-background-color: white;
+}
+
 
 

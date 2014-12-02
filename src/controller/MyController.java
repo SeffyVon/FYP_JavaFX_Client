@@ -20,6 +20,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -151,7 +152,7 @@ public class MyController implements Initializable {
 	private Set<String> uStringSet = new HashSet<String>();
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
 	
-	
+	ObservableList<String> observableList3 = FXCollections.observableArrayList();
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -275,7 +276,41 @@ public class MyController implements Initializable {
 	}
 	
 	void setChatPanel(String uname){
-		chatTitledPane.setText("Message with " + uname);
+		ArrayList<String> messageList = new ArrayList<String>();
+		messageList.add("1");
+		messageList.add("2");
+		Platform.runLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				chatTitledPane.setText("Message with " + uname);
+			    observableList3.setAll(messageList);
+			    chatListView.setItems(observableList3);
+			}
+		});
+
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+
+			    while(true){
+			    	Platform.runLater(new Runnable(){
+						@Override
+						public void run() {
+							observableList3.add("new message");
+						}
+			    	
+			    	});
+			    
+			    	Thread.sleep(1000);
+			    }
+			}
+
+		
+		};
+		new Thread(task).start();
+
 	}
 	
 	public void setLabelVisibility(boolean visible){
