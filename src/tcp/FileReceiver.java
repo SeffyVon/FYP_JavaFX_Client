@@ -14,7 +14,7 @@ import javafx.scene.control.ProgressBar;
 
 public class FileReceiver {
 	
-	public boolean receiveFromIP(String ipAddr, String movieFileName, Label downloadingLabel, ProgressBar networkProgressBar){
+	public boolean receiveFromIP(String ipAddr, String movieFileName, ProgressBar networkProgressBar){
 
 		Task<Void> task = new Task<Void>() {	
 			@Override
@@ -77,7 +77,6 @@ public class FileReceiver {
 
     					@Override
     					public void run() {
-    						downloadingLabel.setVisible(false);
     	    				networkProgressBar.setVisible(false);
     					}
     					

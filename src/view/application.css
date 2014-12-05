@@ -3,6 +3,13 @@
     -fx-background-color: #3e4042;
 }
 
+#bgPane
+{
+/* 	-fx-background-color: black;*/
+	-fx-background-image:url("../../resources/pic/cinema_original.jpg");
+	-fx-background-size: 100%;
+}
+
 #MovieTape
 {
 	-fx-background-image:url("../../resources/pic/border-right.gif") repeat;

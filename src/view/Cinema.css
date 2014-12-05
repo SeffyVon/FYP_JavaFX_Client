@@ -1,3 +1,10 @@
+#bgPane
+{
+/* 	-fx-background-color: black;*/
+	-fx-background-image:url("../../resources/pic/cinema_original.jpg");
+	-fx-background-size: 100%;
+}
+
 .theme
 {
     -fx-background-color: #3e4042;
@@ -21,9 +28,9 @@
 	-fx-text-fill: #0e5b95;
 }
 
-.groupScene, .movieScene
+.groupScene, .movieScene, .cinemaPane
 {
-	-fx-background-color: black;
+	-fx-background-color: #2b2a29;
 }
 
 /*list view */

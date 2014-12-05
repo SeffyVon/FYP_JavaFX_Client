@@ -96,10 +96,10 @@
             <Pane layoutX="25.0" layoutY="610.0" prefHeight="600.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
                <children>
                   <MediaView fx:id="mediaView" fitHeight="300.0" fitWidth="512.0" layoutX="37.0" layoutY="93.0" />
-                  <Slider fx:id="timeSlider" layoutX="35.0" layoutY="457.0" prefHeight="15.0" prefWidth="521.0" />
-                  <Button id="playButton" fx:id="playButton" layoutX="268.0" layoutY="518.0" mnemonicParsing="false" stylesheets="@application.css" />
-                  <Slider fx:id="volumeSlider" layoutX="176.0" layoutY="492.0" prefHeight="15.0" prefWidth="232.0" />
-                  <Button id="volumeButton" layoutX="120.0" layoutY="482.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="31.0" />
+                  <Slider fx:id="timeSlider" layoutX="33.0" layoutY="423.0" prefHeight="15.0" prefWidth="521.0" />
+                  <Button id="playButton" fx:id="playButton" layoutX="426.0" layoutY="446.0" mnemonicParsing="false" stylesheets="@application.css" />
+                  <Slider fx:id="volumeSlider" layoutX="176.0" layoutY="458.0" prefHeight="15.0" prefWidth="232.0" />
+                  <Button id="volumeButton" layoutX="120.0" layoutY="448.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="31.0" />
                </children>
             </Pane>
             <Pane fx:id="messagePane" layoutX="25.0" layoutY="1210.0" prefHeight="590.0" prefWidth="585.0" styleClass="groupScene" stylesheets="@application.css">
@@ -117,8 +117,8 @@
                               <Region prefHeight="19.0" prefWidth="373.0" />
                               <HBox minWidth="350.0">
                                  <children>
-                                    <TextFlow prefHeight="26.0" prefWidth="330.0" textAlignment="CENTER" />
-                                    <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="SEND" />
+                                    <TextField fx:id="chatInputTextField" prefHeight="27.0" prefWidth="328.0" />
+                                    <Button fx:id="sendChatButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="SEND" />
                                  </children>
                               </HBox>
                            </children>
@@ -153,7 +153,7 @@
             </ImageView>
             <VBox alignment="TOP_CENTER" layoutX="24.0" layoutY="256.0" prefHeight="200.0" prefWidth="119.0" spacing="20.0" stylesheets="@application.css">
                <children>
-                  <Button fx:id="groupButton" mnemonicParsing="false" prefHeight="41.0" prefWidth="95.0" styleClass="rightVbox" stylesheets="@application.css" text="GROUPS">
+                  <Button fx:id="groupButton" mnemonicParsing="false" prefHeight="37.0" prefWidth="108.0" styleClass="rightVbox" stylesheets="@application.css" text="MOVIES">
                      <font>
                         <Font name="Calibri" size="13.0" />
                      </font>
@@ -161,17 +161,17 @@
                         <InnerShadow />
                      </effect>
                   </Button>
-                  <Button fx:id="movieButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="95.0" styleClass="rightVbox" stylesheets="@application.css" text="MOVIE">
+                  <Button fx:id="movieButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="128.0" styleClass="rightVbox" stylesheets="@application.css" text="WATCHING">
                      <effect>
                         <InnerShadow />
                      </effect>
                   </Button>
-                  <Button fx:id="messageButton" mnemonicParsing="false" styleClass="rightVbox" stylesheets="@application.css" text="MESSAGE">
+                  <Button fx:id="messageButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="105.0" styleClass="rightVbox" stylesheets="@application.css" text="FRIENDS">
                      <effect>
                         <InnerShadow />
                      </effect>
                   </Button>
-                  <Button fx:id="settingButton" mnemonicParsing="false" prefHeight="38.0" prefWidth="96.0" styleClass="rightVbox" stylesheets="@application.css" text="SETTING">
+                  <Button fx:id="settingButton" mnemonicParsing="false" prefHeight="37.0" prefWidth="110.0" styleClass="rightVbox" stylesheets="@application.css" text="SETTING">
                      <effect>
                         <InnerShadow />
                      </effect>

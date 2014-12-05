@@ -34,6 +34,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -130,7 +131,8 @@ public class MyController implements Initializable {
 	private ListView<String> chatListView;
 	@FXML
 	private TitledPane chatTitledPane;
-
+	@FXML
+	private TextField chatInputTextField;
 
  	
 	Stage primaryStage;
@@ -212,6 +214,12 @@ public class MyController implements Initializable {
 	        @Override
 	        public void handle(ActionEvent event) {
 	        	System.out.println("add group");
+	    		Optional<String> response = Dialogs.create()
+	    		        .owner(primaryStage)
+	    		        .title("Create a group")
+	    		        .masthead("Create a group")
+	    		        .message("group name:")
+	    		        .showTextInput("");
 	        }
 		});
 		
@@ -219,6 +227,12 @@ public class MyController implements Initializable {
 	        @Override
 	        public void handle(ActionEvent event) {
 	        	System.out.println("add user");
+	    		Optional<String> response = Dialogs.create()
+	    		        .owner(primaryStage)
+	    		        .title("Invite a user")
+	    		        .masthead("Who do you want to invite to this group?")
+	    		        .message("user name:")
+	    		        .showTextInput("");
 	        }
 		});
 		
@@ -233,7 +247,7 @@ public class MyController implements Initializable {
 		System.out.println(unameLabel.getText());
 		setMoviePane();
 		toGroupPane();
-	
+		chatInputTextField.setEditable(true);
 	}
 	
 	public void setTreeView(){
@@ -500,7 +514,7 @@ public class MyController implements Initializable {
 			}
 			
 		});
-		fileReceiver.receiveFromIP(ipAddrString, currentMovie.getMovieFileNameString(), downloadingLabel, networkProgressBar);
+		fileReceiver.receiveFromIP(ipAddrString, currentMovie.getMovieFileNameString(), networkProgressBar);
 		
 	}
 

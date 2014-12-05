@@ -3,14 +3,13 @@
 import java.io.IOException;
 import java.net.URL;
 
-import controller.LoginController;
-import controller.MyController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import controller.LoginController;
 
 //http://code.makery.ch/java/javafx-8-tutorial-part1/
 
@@ -18,6 +17,7 @@ public class MainApp extends Application {
 
 	public Stage primaryStage;
 	private AnchorPane rootLayout;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		  	this.primaryStage = primaryStage;
@@ -36,6 +36,13 @@ public class MainApp extends Application {
             rootLayout = (AnchorPane)fxmlLoader.load();
             LoginController controller = fxmlLoader.getController();
             controller.setThisStage(primaryStage);
+//			 URL location = MainApp.class.getResource("view/Cinema.fxml");
+//	            FXMLLoader fxmlLoader = new FXMLLoader();
+//	            fxmlLoader.setLocation(location);
+//	            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+//	            rootLayout = (Pane)fxmlLoader.load();
+//	            CinemaController controller = fxmlLoader.getController();
+	            controller.setThisStage(primaryStage);
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);

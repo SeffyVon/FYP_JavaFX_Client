@@ -17,7 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.User;
 import tcp.UserRequest;
@@ -68,20 +68,26 @@ public class LoginController implements Initializable{
 	            String pword = pwordField.getText();
 	            UserRequest userRequest = new UserRequest();
 	            if( userRequest.userLogin(uname, pword, Config.localAddrString, true)){
-	            	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/MyLayout.fxml"));
-	                AnchorPane GLayout = null;
+	            	//FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/MyLayout.fxml"));
+	            	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/Cinema.fxml"));
+	                
+	            	Pane GLayout = null;
 					try {
-						GLayout = (AnchorPane)fxmlLoader.load();
-						MyController myController = fxmlLoader.getController();
-					
-						myController.setUser(new User(uname,Config.localAddrString));
-						myController.prepareGroups();
-						myController.setGListView();
-
-						primaryStage.setX(200);
-						primaryStage.setY(50);
+						GLayout = fxmlLoader.load();
+						//MyController myController = fxmlLoader.getController();
+//						myController.setUser(new User(uname,Config.localAddrString));
+//						myController.prepareGroups();
+//						myController.setGListView();
+//						myController.setThisStage(primaryStage);
+						CinemaController cinemaController = fxmlLoader.getController();
+						cinemaController.setUser(new User(uname,Config.localAddrString));
+						cinemaController.prepareGroups();
+						cinemaController.setGListView();
+						primaryStage.setResizable(false);
+						primaryStage.setX(0);
+						primaryStage.setY(0);
 						primaryStage.getScene().setCursor(Cursor.DEFAULT);
-						myController.setThisStage(primaryStage);
+						cinemaController.setThisStage(primaryStage);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
