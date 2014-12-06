@@ -54,7 +54,7 @@ public class GroupRequest {
 			  .field("lasttime", lasttime)
 			  .asJson();
 			
-			System.out.println(responseJson.getBody());
+	//		System.out.println(responseJson.getBody());
 			JSONArray jsonArray = responseJson.getBody().getArray();
 
 			ArrayList<GMessage> messageList = new ArrayList<GMessage>();

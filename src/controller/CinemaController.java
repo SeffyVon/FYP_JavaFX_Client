@@ -13,9 +13,9 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,7 +40,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import model.GMessage;
 import model.Group;
 import model.Movie;
@@ -128,8 +127,15 @@ public class CinemaController implements Initializable  {
 
 					@Override
 					protected Void call() throws Exception {
-						System.out.println(currentGroupName + " " + user.getUname());
+						//System.out.println(currentGroupName + " " + user.getUname());
 						GroupRequest.sendGroupMessage(currentGroupName, user.getUname(), messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+						Platform.runLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								messageTextField.setText("");
+							}
+						});
 						return null;
 					}
 					
@@ -380,20 +386,42 @@ public class CinemaController implements Initializable  {
 			}
 		});
 		
-		Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+//		Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+//
+//		    @Override
+//		    public void handle(ActionEvent event) {
+//		    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, lastMessageTimeString);
+//				if(!newMessageList.isEmpty()){	
+//					lastMessageTimeString = newMessageList.get(newMessageList.size()-1).getMessageTime();
+//					observableList3.addAll(newMessageList);
+//					System.out.println("add to observable list 3");
+//				}
+//		    }
+//		}));
+//		fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
+//		fiveSecondsWonder.play();
+		
+		new Timer().schedule(
+			    new TimerTask() {
 
-		    @Override
-		    public void handle(ActionEvent event) {
-		    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, lastMessageTimeString);
-				if(!newMessageList.isEmpty()){	
-					lastMessageTimeString = newMessageList.get(newMessageList.size()-1).getMessageTime();
-					observableList3.addAll(newMessageList);
-					System.out.println("add to observable list 3");
-				}
-		    }
-		}));
-		fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
-		fiveSecondsWonder.play();
+			        @Override
+			        public void run() {
+				    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, lastMessageTimeString);
+						if(!newMessageList.isEmpty()){	
+							lastMessageTimeString = newMessageList.get(newMessageList.size()-1).getMessageTime();
+							Platform.runLater(new Runnable(){
+
+								@Override
+								public void run() {
+									observableList3.addAll(newMessageList);
+								}
+								
+							});
+
+							//System.out.println("add to observable list 3");
+						}
+			        }
+			    }, 0, 2000);
 
 	}
 	
