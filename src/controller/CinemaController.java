@@ -116,7 +116,7 @@ public class CinemaController implements Initializable  {
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
 	
 	String lastMessageTimeString = "2000-01-01 00:00:00";
-	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(); // GMessage
+	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // GMessage
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		networkProgressBar.setVisible(false);
@@ -377,6 +377,7 @@ public class CinemaController implements Initializable  {
 			public void run() {
 				
 			    GMessageListView.setItems(observableList3);
+			    
 			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
 			        @Override
 			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
