@@ -69,5 +69,6 @@ public class GMessage {
     }
     public static Callback<GMessage, Observable[]> extractor() {
     	   return (GMessage p) -> new Observable[]{p.messageTextProperty(), p.messageTimeProperty(), p.movieTimeProperty(), p.groupNameProperty(),p.uNameProperty()};
-    	}
+    	   // http://www.javacodegeeks.com/2014/11/properties-extractor-best-way-to-get-the-listview-instantly-updating-its-elements.html	
+    }
 }

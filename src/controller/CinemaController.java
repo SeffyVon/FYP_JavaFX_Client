@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,8 +22,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -35,7 +38,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -54,7 +61,7 @@ import tcp.GroupRequest;
 import view.GCell;
 import view.UCell;
 
-public class CinemaController implements Initializable  {
+public class CinemaController implements Initializable {
 
 	@FXML
 	BorderPane moviePane;
@@ -98,6 +105,12 @@ public class CinemaController implements Initializable  {
 	ProgressBar networkProgressBar;
 	@FXML
 	TextField messageTextField;
+	@FXML
+	StackPane centerStackPane;
+	@FXML
+	Pane currentMoviePane;
+//	@FXML
+//	Pane groupMoviePane;
 	
  	
 	Stage primaryStage;
@@ -117,9 +130,46 @@ public class CinemaController implements Initializable  {
 	
 	String lastMessageTimeString = "2000-01-01 00:00:00";
 	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // GMessage
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		networkProgressBar.setVisible(false);
+		
+		watchButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	System.out.println("you press watch");
+	        	
+	        	Platform.runLater(new Runnable(){
+
+					@Override
+					public void run() {
+						
+			        	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/CurrentMoviePane.fxml"));    
+			    	    try {
+			    	        currentMoviePane = (Pane) fxmlLoader.load();
+			    	        CurrentMovieController currentMovieController = fxmlLoader.getController();
+			    	        if(currentMovie == null)
+			    	        	return;
+			    	        currentMovieController.setCenterStackPane(centerStackPane);
+			    	        currentMovieController.setMovieMediaPane(currentMovie);
+			    	    } catch (IOException e) {
+			    	        throw new RuntimeException(e);
+			    	    }
+			    	    //centerStackPane.getChildren().get(0);
+			    	    //centerStackPane.getChildren().remove(0);
+			    	    centerStackPane.getChildren().add(1, currentMoviePane);
+			    	    
+					}
+	        		
+	        	});
+	        	
+	        	setGMessageListView();
+	        	
+	
+	        }
+		});
+		
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
@@ -142,6 +192,33 @@ public class CinemaController implements Initializable  {
 				};
 				new Thread(t).start();
 	        }
+		});
+		
+		messageTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent ke) {
+				if(ke.getCode() == KeyCode.ENTER){
+					Task<Void> t = new Task<Void>(){
+
+						@Override
+						protected Void call() throws Exception {
+							//System.out.println(currentGroupName + " " + user.getUname());
+							GroupRequest.sendGroupMessage(currentGroupName, user.getUname(), messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+							Platform.runLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									messageTextField.setText("");
+								}
+							});
+							return null;
+						}
+						
+					};
+					new Thread(t).start();
+				}
+			}
 		});
 	}
 	
@@ -260,7 +337,9 @@ public class CinemaController implements Initializable  {
 			return;
 		}
 		
+		
 		currentMovie = groupMap.get(currentGroupName).getMovie();
+		System.out.println("setcurrentMovie"+currentMovie);
 		
 		if( currentMovie == null){
 			noMovie();
@@ -339,7 +418,6 @@ public class CinemaController implements Initializable  {
 			        
 					setUListView();
 					setMoviePane();
-					setGMessageListView();
 			    });
 				
 			}
@@ -375,7 +453,7 @@ public class CinemaController implements Initializable  {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				
+				GMessageListView.setVisible(true);
 			    GMessageListView.setItems(observableList3);
 			    
 			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
@@ -447,6 +525,7 @@ public class CinemaController implements Initializable  {
 		}
 
 	}
+
 
 	
 }

@@ -30,7 +30,7 @@
 
 .groupScene, .movieScene, .cinemaPane
 {
-	-fx-background-color: #2b2a29;
+	-fx-background-color: black; /*#2b2a29; */
 }
 
 /*list view */
