@@ -6,12 +6,45 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.util.Callback;
+import javafx.util.Duration;
+import model.GMessage;
+import model.Group;
+import model.Movie;
+import model.User;
 
 import org.controlsfx.dialog.Dialogs;
 import org.json.JSONArray;
@@ -21,29 +54,6 @@ import tcp.FileReceiver;
 import tcp.GroupRequest;
 import view.GCell;
 import view.UCell;
-import model.Group;
-import model.Movie;
-import model.User;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.media.MediaPlayer;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.util.Callback;
 
 public class CinemaController implements Initializable  {
 
@@ -52,9 +62,7 @@ public class CinemaController implements Initializable  {
 	@FXML
 	Button watchButton;
 	@FXML
-	Button rightButton;
-	@FXML
-	Button leftButton;
+	Button sendButton;
 	@FXML
 	ImageView movieOwnerImageView;
 	@FXML
@@ -82,11 +90,16 @@ public class CinemaController implements Initializable  {
 	@FXML
 	ListView<User> UListView;
 	@FXML
-	private ListView GListView;
+	ListView GListView;
+	@FXML
+	ListView GMessageListView;
 	@FXML
 	TextArea movieBriefTextArea;
 	@FXML
 	ProgressBar networkProgressBar;
+	@FXML
+	TextField messageTextField;
+	
  	
 	Stage primaryStage;
 	
@@ -103,10 +116,27 @@ public class CinemaController implements Initializable  {
 	private Set<String> uStringSet = new HashSet<String>();
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
 	
+	String lastMessageTimeString = "2000-01-01 00:00:00";
+	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(); // GMessage
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		networkProgressBar.setVisible(false);
-		
+		sendButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	Task<Void> t = new Task<Void>(){
+
+					@Override
+					protected Void call() throws Exception {
+						System.out.println(currentGroupName + " " + user.getUname());
+						GroupRequest.sendGroupMessage(currentGroupName, user.getUname(), messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+						return null;
+					}
+					
+				};
+				new Thread(t).start();
+	        }
+		});
 	}
 	
 	public void setLabelVisibility(boolean visible){
@@ -303,7 +333,7 @@ public class CinemaController implements Initializable  {
 			        
 					setUListView();
 					setMoviePane();
-			        
+					setGMessageListView();
 			    });
 				
 			}
@@ -333,8 +363,60 @@ public class CinemaController implements Initializable  {
 
 	}
 	
-	void selectGroup(String groupName){
+	void setGMessageListView(){	
 		
+		Platform.runLater(new Runnable() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void run() {
+				
+			    GMessageListView.setItems(observableList3);
+			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
+			        @Override
+			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
+			            return new GMCell();
+			        }
+			    });
+			}
+		});
+		
+		Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+
+		    @Override
+		    public void handle(ActionEvent event) {
+		    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, lastMessageTimeString);
+				if(!newMessageList.isEmpty()){	
+					lastMessageTimeString = newMessageList.get(newMessageList.size()-1).getMessageTime();
+					observableList3.addAll(newMessageList);
+					System.out.println("add to observable list 3");
+				}
+		    }
+		}));
+		fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
+		fiveSecondsWonder.play();
+
+	}
+	
+	public class GMCell extends ListCell<GMessage>{
+		
+		@Override
+		public void updateItem(GMessage gMessage, boolean empty){
+		    super.updateItem(gMessage,empty);
+		    if(gMessage != null) {
+		        GMData data = new GMData();
+		        Platform.runLater(new Runnable(){
+					@Override
+					public void run() {
+						data.setImage(userMap.get(gMessage.getUname()).getMiddleImage());
+				        data.setInfo(gMessage.getMessage());
+				        setGraphic(data.getBox());
+					}
+		        	
+		        });
+
+		    }
+		}
+
 	}
 
 	

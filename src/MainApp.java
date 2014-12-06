@@ -36,12 +36,7 @@ public class MainApp extends Application {
             rootLayout = (AnchorPane)fxmlLoader.load();
             LoginController controller = fxmlLoader.getController();
             controller.setThisStage(primaryStage);
-//			 URL location = MainApp.class.getResource("view/Cinema.fxml");
-//	            FXMLLoader fxmlLoader = new FXMLLoader();
-//	            fxmlLoader.setLocation(location);
-//	            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
-//	            rootLayout = (Pane)fxmlLoader.load();
-//	            CinemaController controller = fxmlLoader.getController();
+
 	            controller.setThisStage(primaryStage);
 
             // Show the scene containing the root layout.
