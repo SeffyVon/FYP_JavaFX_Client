@@ -21,24 +21,11 @@ public class GroupRequest {
 	
 	String hostAddrString;
 	public GroupRequest() {
-	    hostAddrString = "http://127.0.0.1:63342/OnlineCinema_Server/src/";
+	    hostAddrString = "http://" + Config.macAddrString + ":63342/OnlineCinema_Server/src/";
 		System.out.println(hostAddrString);
 	}
 	
-	public JSONObject getGroupsAndMovies(String uname){
-		try {
-			HttpResponse<JsonNode> responseString = Unirest.post(hostAddrString + "groups/getGroups.php")
-			  .field("uname",uname)
-			  .asJson();
-			if(!responseString.getBody().toString().equals("{}"))
-				return responseString.getBody().getObject();
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-		
-	}
+
 	
 	public JSONObject getGroupMems(String uname){
 		try {

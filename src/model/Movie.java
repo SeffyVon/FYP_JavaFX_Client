@@ -8,19 +8,26 @@ public class Movie {
 	String endTString;
 	String imagePosterLocString;
 	String movieOwnerIPString;
+	int port = 0;
+	int filesize = 0;
 	
 	public Movie(String movieNameString,
 	String movieOwnerNameString,
 	String movieBriefString,
 	String startTString,
 	String endTString,
-	String movieOwnerIPString) {
+	String movieOwnerIPString,
+	int port,
+	int filesize
+	) {
 		this.movieNameString = movieNameString;
 		this.movieOwnerNameString = movieOwnerNameString;
 		this.movieBriefString = movieBriefString;
 		this.startTString = startTString;
 		this.endTString = endTString;
 		this.movieOwnerIPString = movieOwnerIPString;
+		this.port = port;
+		this.filesize = filesize;
 	}
 	
 	public String getMovieOwnerIPString(){
@@ -48,6 +55,14 @@ public class Movie {
 	
 	public String getEndTimeString(){
 		return endTString;
+	}
+	
+	public int getPort(){
+		return port;
+	}
+	
+	public int getFilesize(){
+		return filesize;
 	}
 	
 }

@@ -86,6 +86,8 @@ public class LoginController implements Initializable{
 						primaryStage.setResizable(false);
 						primaryStage.setX(0);
 						primaryStage.setY(0);
+						primaryStage.setWidth(1280);
+						primaryStage.setHeight(724);
 						primaryStage.getScene().setCursor(Cursor.DEFAULT);
 						cinemaController.setThisStage(primaryStage);
 					} catch (IOException e) {

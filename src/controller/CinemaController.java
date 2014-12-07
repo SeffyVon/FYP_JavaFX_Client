@@ -227,7 +227,10 @@ public class CinemaController implements Initializable {
 						movieJsonObject.getString("brief"),
 						movieJsonObject.getString("startTime"),
 						movieJsonObject.getString("endTime"),
-						movieJsonObject.getString("ownerIP"));
+						movieJsonObject.getString("ownerIP"),
+						movieJsonObject.getInt("port"),
+						movieJsonObject.getInt("filesize")
+						);
 			}
 			ArrayList<User> userArrayList = new ArrayList<User>();
 			for(int i=0;i<userJsonArray.length();i++){
@@ -328,7 +331,7 @@ public class CinemaController implements Initializable {
 	}
 	
 	void receiveFromUser(){
-		String ipAddrString = currentMovie.getMovieOwnerIPString();        
+		String ipAddrString = Config.macAddrString;        
 		FileReceiver fileReceiver = new FileReceiver();
 		System.out.println("receive from ip");
 		Platform.runLater(new Runnable(){
@@ -339,7 +342,7 @@ public class CinemaController implements Initializable {
 			}
 			
 		});
-		fileReceiver.receiveFromIP(ipAddrString, currentMovie.getMovieFileNameString(), networkProgressBar);
+		fileReceiver.receiveFromIP(ipAddrString, currentMovie.getMovieFileNameString(), networkProgressBar, currentMovie.getPort(),currentMovie.getFilesize());
 		
 	}
 	@SuppressWarnings("unchecked")
