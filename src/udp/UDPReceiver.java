@@ -14,4 +14,15 @@ public class UDPReceiver {
 		new UDPReceiver();
 	}
 	 
+	public void stopReceiver(){
+		udpReceiverThreaded.stopThread();
+		udpReceiverThreaded = null;
+	}
+	
+	public void resumeReceiver(){
+		if(udpReceiverThreaded==null)
+			udpReceiverThreaded = new UDPReceiverThreaded();
+		udpReceiverThreaded.start();
+	}
+	 
 }

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -9,6 +10,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -17,8 +19,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
@@ -26,6 +31,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 import model.Movie;
+import tcp.GroupRequest;
 import tcp.ProgressBarSyn;
 
 public class CurrentMovieController implements Initializable{
@@ -46,24 +52,69 @@ public class CurrentMovieController implements Initializable{
 	@FXML
 	Button returnButton;
 	@FXML
+	Button sendButton;
+	@FXML
 	StackPane centerStackPane;
+	@FXML
+	TextField messageTextField;
+	
+	String currentGroupName;
+	String userName;
 
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.out.println("init");
-//		mediaView.setOnMouseEntered(new EventHandler<Event>() {
-//			@Override
-//			public void handle(Event event) {
-//				controlGroup.setVisible(true);
-//			}
-//		});
-//		mediaView.setOnMouseExited(new EventHandler<Event>() {
-//			
-//			@Override
-//			public void handle(Event event) {
-//				controlGroup.setVisible(false);
-//			}
-//		});
+		System.out.println("init current movie controller");
+		sendButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	Task<Void> t = new Task<Void>(){
+
+					@Override
+					protected Void call() throws Exception {
+						Platform.runLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								messageTextField.setText("");
+							}
+						});
+						GroupRequest.sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+
+						return null;
+					}
+					
+				};
+				new Thread(t).start();
+	        }
+		});
+		
+		messageTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent ke) {
+				if(ke.getCode() == KeyCode.ENTER){
+					Task<Void> t = new Task<Void>(){
+
+						@Override
+						protected Void call() throws Exception {
+							System.out.println("send"+currentGroupName + " " +userName);
+							GroupRequest.sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+							Platform.runLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									messageTextField.setText("");
+								}
+							});
+							return null;
+						}
+						
+					};
+					new Thread(t).start();
+				}
+			}
+		});
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -160,8 +211,8 @@ public class CurrentMovieController implements Initializable{
 		returnButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	
             	centerStackPane.getChildren().remove(centerStackPane.getChildren().size()-1);
+            	mp.volumeProperty().setValue(0);
             }
         });
 		timeSlider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
@@ -195,6 +246,12 @@ public class CurrentMovieController implements Initializable{
 		this.centerStackPane = centerStackPane;
 	}
 	
+	public void setGroupName(String groupName){
+		this.currentGroupName = groupName;
+	}
 	
+	public void setUserName(String userName){
+		this.userName = userName;
+	}
 
 }

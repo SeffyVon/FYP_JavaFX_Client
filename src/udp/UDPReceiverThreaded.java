@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialogs;
@@ -19,6 +20,8 @@ public class UDPReceiverThreaded extends Thread{
     protected BufferedReader in = null;
     protected int port = 4447;
     protected String host = "230.0.0.1";
+    
+    AtomicBoolean isRunning = new AtomicBoolean(true);
     
     public UDPReceiverThreaded() {
     	System.out.println("Receier Comes");
@@ -35,10 +38,15 @@ public class UDPReceiverThreaded extends Thread{
       
 
 	}
+    
+    public void stopThread(){
+    	isRunning.set(false);
+    	System.out.println("stop receiver thread");
+    }
     @Override
 	public void run() {
 		DatagramPacket packet = null;
-		while(true){
+		while(isRunning.get()){
 			// receive request
 			byte[] buf = new byte[256];
 

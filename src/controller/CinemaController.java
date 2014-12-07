@@ -52,6 +52,7 @@ import model.Group;
 import model.Movie;
 import model.User;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.controlsfx.dialog.Dialogs;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,8 +68,6 @@ public class CinemaController implements Initializable {
 	BorderPane moviePane;
 	@FXML
 	Button watchButton;
-	@FXML
-	Button sendButton;
 	@FXML
 	ImageView movieOwnerImageView;
 	@FXML
@@ -103,8 +102,6 @@ public class CinemaController implements Initializable {
 	TextArea movieBriefTextArea;
 	@FXML
 	ProgressBar networkProgressBar;
-	@FXML
-	TextField messageTextField;
 	@FXML
 	StackPane centerStackPane;
 	@FXML
@@ -151,6 +148,8 @@ public class CinemaController implements Initializable {
 			    	        CurrentMovieController currentMovieController = fxmlLoader.getController();
 			    	        if(currentMovie == null)
 			    	        	return;
+			    	        currentMovieController.setGroupName(currentGroupName);
+			    	        currentMovieController.setUserName(user.getUname());
 			    	        currentMovieController.setCenterStackPane(centerStackPane);
 			    	        currentMovieController.setMovieMediaPane(currentMovie);
 			    	    } catch (IOException e) {
@@ -170,56 +169,7 @@ public class CinemaController implements Initializable {
 	        }
 		});
 		
-		sendButton.setOnAction(new EventHandler<ActionEvent>() {
-	        @Override
-	        public void handle(ActionEvent event) {
-	        	Task<Void> t = new Task<Void>(){
 
-					@Override
-					protected Void call() throws Exception {
-						//System.out.println(currentGroupName + " " + user.getUname());
-						GroupRequest.sendGroupMessage(currentGroupName, user.getUname(), messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
-						Platform.runLater(new Runnable() {
-							
-							@Override
-							public void run() {
-								messageTextField.setText("");
-							}
-						});
-						return null;
-					}
-					
-				};
-				new Thread(t).start();
-	        }
-		});
-		
-		messageTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent ke) {
-				if(ke.getCode() == KeyCode.ENTER){
-					Task<Void> t = new Task<Void>(){
-
-						@Override
-						protected Void call() throws Exception {
-							//System.out.println(currentGroupName + " " + user.getUname());
-							GroupRequest.sendGroupMessage(currentGroupName, user.getUname(), messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
-							Platform.runLater(new Runnable() {
-								
-								@Override
-								public void run() {
-									messageTextField.setText("");
-								}
-							});
-							return null;
-						}
-						
-					};
-					new Thread(t).start();
-				}
-			}
-		});
 	}
 	
 	public void setLabelVisibility(boolean visible){
