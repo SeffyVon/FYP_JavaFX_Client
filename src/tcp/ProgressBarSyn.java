@@ -17,7 +17,7 @@ public class ProgressBarSyn {
 	static UDPSender sender = null;
 
 	static MediaPlayer mediaPlayer = null;
-	static boolean isSyn;
+
 	
 	public ProgressBarSyn(){
 		receiver = new UDPReceiver();
@@ -39,10 +39,8 @@ public class ProgressBarSyn {
 	}
 	
 	public static void sendProgress(double progress0){
-		if(isSyn==false){
-			return;
-		}
-		System.out.println("set Progress");
+		
+		System.out.println("send Progress");
 		try {
 			sender.send(progress0);
 		} catch (UnknownHostException e) {

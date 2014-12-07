@@ -439,8 +439,8 @@ public class CinemaController implements Initializable {
 
 			        @Override
 			        public void run() {
-			        	System.out.println("Current group:" + currentGroupName);
-			        	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
+			     //   	System.out.println("Current group:" + currentGroupName);
+			     //   	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
 			        	
 				    	ArrayList<GMessage> newMessageList = new GroupRequest().getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
 						if(!newMessageList.isEmpty()){	
@@ -448,10 +448,10 @@ public class CinemaController implements Initializable {
 							Platform.runLater(new Runnable(){
 								@Override
 								public void run() {
-									System.out.println("Receive new group messages 2");
-									System.out.println("1 observableList in add new items " + observableList3);
+						//			System.out.println("Receive new group messages 2");
+						//			System.out.println("1 observableList in add new items " + observableList3);
 									observableList3.addAll(newMessageList);
-									System.out.println("observableList in add new items " + observableList3);
+						//			System.out.println("observableList in add new items " + observableList3);
 									
 								}
 							});
