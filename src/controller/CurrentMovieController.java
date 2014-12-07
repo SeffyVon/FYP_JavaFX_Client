@@ -79,7 +79,7 @@ public class CurrentMovieController implements Initializable{
 								messageTextField.setText("");
 							}
 						});
-						GroupRequest.sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+						new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
 
 						return null;
 					}
@@ -99,7 +99,7 @@ public class CurrentMovieController implements Initializable{
 						@Override
 						protected Void call() throws Exception {
 							System.out.println("send"+currentGroupName + " " +userName);
-							GroupRequest.sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+							new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
 							Platform.runLater(new Runnable() {
 								
 								@Override

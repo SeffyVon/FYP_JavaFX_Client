@@ -15,10 +15,19 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import config.Config;
+
 public class GroupRequest {
-	static public JSONObject getGroupsAndMovies(String uname){
+	
+	String hostAddrString;
+	public GroupRequest() {
+	    hostAddrString = "http://"+Config.macAddrString+":63342/OnlineCinema_Server/src/";
+		System.out.println(hostAddrString);
+	}
+	
+	public JSONObject getGroupsAndMovies(String uname){
 		try {
-			HttpResponse<JsonNode> responseString = Unirest.post("http://127.0.0.1:63342/OnlineCinema_Server/src/groups/getGroups.php")
+			HttpResponse<JsonNode> responseString = Unirest.post(hostAddrString + "groups/getGroups.php")
 			  .field("uname",uname)
 			  .asJson();
 			if(!responseString.getBody().toString().equals("{}"))
@@ -31,9 +40,9 @@ public class GroupRequest {
 		
 	}
 	
-	static public JSONObject getGroupMems(String uname){
+	public JSONObject getGroupMems(String uname){
 		try {
-			HttpResponse<JsonNode> responseString = Unirest.post("http://127.0.0.1:63342/OnlineCinema_Server/src/groups/getGroupMems.php")
+			HttpResponse<JsonNode> responseString = Unirest.post(hostAddrString + "groups/getGroupMems.php")
 			  .field("uname",uname)
 			  .asJson();
 			//System.out.println(responseString.getBody());
@@ -47,9 +56,9 @@ public class GroupRequest {
 		
 	}
 	
-	static public ArrayList<GMessage> getGroupMessage(String groupname, String lasttime){
+	public ArrayList<GMessage> getGroupMessage(String groupname, String lasttime){
 		try {
-			HttpResponse<JsonNode> responseJson = Unirest.post("http://127.0.0.1:63342/OnlineCinema_Server/src/groups/groupMessage.php")
+			HttpResponse<JsonNode> responseJson = Unirest.post(hostAddrString + "groups/groupMessage.php")
 			  .field("groupname", groupname)
 			  .field("lasttime", lasttime)
 			  .asJson();
@@ -71,10 +80,10 @@ public class GroupRequest {
 		return null;
 		
 	}
-	static public void sendGroupMessage(String groupname, String uname, String message_text, String message_time, String movie_time){
+	public void sendGroupMessage(String groupname, String uname, String message_text, String message_time, String movie_time){
 		try {
 			
-			HttpResponse<String> responseString = Unirest.post("http://127.0.0.1:63342/OnlineCinema_Server/src/groups/sendGroupMessage.php")
+			HttpResponse<String> responseString = Unirest.post(hostAddrString + "groups/sendGroupMessage.php")
 					  .field("groupname", groupname)
 					  .field("uname",uname)
 					  .field("message_text", message_text)
@@ -131,7 +140,7 @@ public class GroupRequest {
 		
 		//Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 		//System.out.println(currentTimestamp.toString());
-		GroupRequest.sendGroupMessage("group0", "cate", "So beautiful!", new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:10:00");
+		new GroupRequest().sendGroupMessage("group0", "cate", "So beautiful!", new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:10:00");
 		
 	}
 }

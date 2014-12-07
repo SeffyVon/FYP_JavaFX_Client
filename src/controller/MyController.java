@@ -382,7 +382,7 @@ public class MyController implements Initializable {
 	
 	void prepareGroups(){
 		
-		JSONObject jsonObject= GroupRequest.getGroupMems("doge");
+		JSONObject jsonObject= new GroupRequest().getGroupMems("doge");
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 			groupNameArrayList.add(iterator.next().toString());
@@ -525,7 +525,7 @@ public class MyController implements Initializable {
 			
 			@Override
 			public void run() {
-				JSONObject jsonObject= GroupRequest.getGroupMems(user.getUname());
+				JSONObject jsonObject= new GroupRequest().getGroupMems(user.getUname());
 				ArrayList<String> groupNameArrayList = new ArrayList<String>();
 				for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 					groupNameArrayList.add(iterator.next().toString());

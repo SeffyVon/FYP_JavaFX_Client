@@ -203,7 +203,7 @@ public class CinemaController implements Initializable {
 		
 		boolean hasFirst = false;
 		
-		JSONObject jsonObject= GroupRequest.getGroupMems("doge");
+		JSONObject jsonObject= new GroupRequest().getGroupMems("doge");
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 			groupNameArrayList.add(iterator.next().toString());
@@ -343,7 +343,7 @@ public class CinemaController implements Initializable {
 			
 			@Override
 			public void run() {
-				JSONObject jsonObject= GroupRequest.getGroupMems(user.getUname());
+				JSONObject jsonObject= new GroupRequest().getGroupMems(user.getUname());
 				ArrayList<String> groupNameArrayList = new ArrayList<String>();
 				for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 					groupNameArrayList.add(iterator.next().toString());
@@ -364,7 +364,6 @@ public class CinemaController implements Initializable {
 			    	
 			    	System.out.println("observable list 3: " + observableList3.size());
 			    	groupMap.get(currentGroupName).setList(observableList3);
-		    	
 			    	currentGroupName = newValue.toString();
 			     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
 			        int groupNum = GListView.getSelectionModel().getSelectedIndex();
@@ -431,18 +430,20 @@ public class CinemaController implements Initializable {
 
 			        @Override
 			        public void run() {
-			        	System.out.println("Receive new group messages");
-				    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
+			        	System.out.println("Current group:" + currentGroupName);
+			        	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
+			        	
+				    	ArrayList<GMessage> newMessageList = new GroupRequest().getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
 						if(!newMessageList.isEmpty()){	
 							groupMap.get(currentGroupName).setLastMessageTime(newMessageList.get(newMessageList.size()-1).getMessageTime());
 							Platform.runLater(new Runnable(){
 								@Override
 								public void run() {
 									System.out.println("Receive new group messages 2");
+									System.out.println("1 observableList in add new items " + observableList3);
 									observableList3.addAll(newMessageList);
+									System.out.println("observableList in add new items " + observableList3);
 									
-									
-									System.out.println(" the items in [timer] GMessageListView: " + GMessageListView.getItems() + GMessageListView.getItems().size());
 								}
 							});
 

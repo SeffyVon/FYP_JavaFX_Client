@@ -107,6 +107,26 @@
     -fx-background-color: transparent;
 }
 
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+	-fx-background-color: transparent;
+	-fx-border-color:derive(grey,80%);
+
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+	-fx-background-color: derive(black,90%);
+	-fx-background-insets: 0,0,0;
+
+}
+
+.increment-button ,.decrement-button {
+	-fx-background-color: derive(black,90%);
+	-fx-border-color:derive(black,90%);
+	-fx-background-radius: 0em;
+}
+
 #posterBackGround
 {
 	-fx-background-color:black; /*to be done */
