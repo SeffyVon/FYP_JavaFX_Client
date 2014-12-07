@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,9 +19,7 @@ import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,11 +32,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -52,7 +46,6 @@ import model.Group;
 import model.Movie;
 import model.User;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.controlsfx.dialog.Dialogs;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,9 +54,11 @@ import tcp.FileReceiver;
 import tcp.GroupRequest;
 import view.GCell;
 import view.UCell;
+import config.Config;
 
 public class CinemaController implements Initializable {
 
+	protected static final int CopyOnWriteArrayList = 0;
 	@FXML
 	BorderPane moviePane;
 	@FXML
@@ -106,8 +101,8 @@ public class CinemaController implements Initializable {
 	StackPane centerStackPane;
 	@FXML
 	Pane currentMoviePane;
-//	@FXML
-//	Pane groupMoviePane;
+
+	Timer groupMessageTimer = null;
 	
  	
 	Stage primaryStage;
@@ -125,9 +120,8 @@ public class CinemaController implements Initializable {
 	private Set<String> uStringSet = new HashSet<String>();
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
 	
-	String lastMessageTimeString = "2000-01-01 00:00:00";
-	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // GMessage
-
+	ObservableList<GMessage> observableList3 = null;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		networkProgressBar.setVisible(false);
@@ -162,8 +156,6 @@ public class CinemaController implements Initializable {
 					}
 	        		
 	        	});
-	        	
-	        	setGMessageListView();
 	        	
 	
 	        }
@@ -209,6 +201,8 @@ public class CinemaController implements Initializable {
 	
 	void prepareGroups(){
 		
+		boolean hasFirst = false;
+		
 		JSONObject jsonObject= GroupRequest.getGroupMems("doge");
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
@@ -238,8 +232,15 @@ public class CinemaController implements Initializable {
 					userMap.put(user.getUname(), user);
 			}
 			Group group = new Group(groupName, userArrayList, movie);	
+			if(hasFirst == false){
+				currentGroupName = groupName;
+				hasFirst = true;
+				setGMessageListView();
+			}
 			groupMap.put(groupName, group);
 		}
+		
+		
 	
 	}
 	
@@ -360,12 +361,15 @@ public class CinemaController implements Initializable {
 			    // Handle ListView selection changes.
 			    // http://code.makery.ch/blog/javafx-8-event-handling-examples/
 			    GListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			        
+			    	
+			    	System.out.println("observable list 3: " + observableList3.size());
+			    	groupMap.get(currentGroupName).setList(observableList3);
+		    	
 			    	currentGroupName = newValue.toString();
 			     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
 			        int groupNum = GListView.getSelectionModel().getSelectedIndex();
 			        System.out.println("selected Group:"+groupNum);
-			        
+			        setGMessageListView();
 					setUListView();
 					setMoviePane();
 			    });
@@ -397,14 +401,20 @@ public class CinemaController implements Initializable {
 
 	}
 	
-	void setGMessageListView(){	
+	
+	public void setGMessageListView(){	
+		
+		if(groupMessageTimer!=null)
+			groupMessageTimer.cancel();
 		
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				GMessageListView.setVisible(true);
-			    GMessageListView.setItems(observableList3);
+				observableList3 = groupMap.get(currentGroupName).getList();
+				GMessageListView.setItems(observableList3);
+
+			    System.out.println(" the items in [set] from map: " + groupMap.get(currentGroupName).getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
 			    
 			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
 			        @Override
@@ -415,42 +425,31 @@ public class CinemaController implements Initializable {
 			}
 		});
 		
-//		Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
-//
-//		    @Override
-//		    public void handle(ActionEvent event) {
-//		    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, lastMessageTimeString);
-//				if(!newMessageList.isEmpty()){	
-//					lastMessageTimeString = newMessageList.get(newMessageList.size()-1).getMessageTime();
-//					observableList3.addAll(newMessageList);
-//					System.out.println("add to observable list 3");
-//				}
-//		    }
-//		}));
-//		fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
-//		fiveSecondsWonder.play();
-		
-		new Timer().schedule(
+		groupMessageTimer = new Timer();
+		groupMessageTimer.schedule(
 			    new TimerTask() {
 
 			        @Override
 			        public void run() {
-				    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, lastMessageTimeString);
+			        	System.out.println("Receive new group messages");
+				    	ArrayList<GMessage> newMessageList = GroupRequest.getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
 						if(!newMessageList.isEmpty()){	
-							lastMessageTimeString = newMessageList.get(newMessageList.size()-1).getMessageTime();
+							groupMap.get(currentGroupName).setLastMessageTime(newMessageList.get(newMessageList.size()-1).getMessageTime());
 							Platform.runLater(new Runnable(){
-
 								@Override
 								public void run() {
+									System.out.println("Receive new group messages 2");
 									observableList3.addAll(newMessageList);
+									
+									
+									System.out.println(" the items in [timer] GMessageListView: " + GMessageListView.getItems() + GMessageListView.getItems().size());
 								}
-								
 							});
 
-							//System.out.println("add to observable list 3");
 						}
 			        }
-			    }, 0, 2000);
+			    }, 0, Config.RefreshGroupMessageRate);
+		
 
 	}
 	

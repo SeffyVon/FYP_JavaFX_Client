@@ -10,4 +10,6 @@ public class Config {
 	public static int otherPort = 15124;
 	public static String localAddrString = "172.20.10.2"; //sender
 	public static String otherAddrString = "172.20.10.3";
+	
+	public static int RefreshGroupMessageRate = 2000; // 2000 milliseconds
 }
