@@ -129,6 +129,11 @@ public class CinemaController implements Initializable {
 		watchButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
+	        	
+	        	if(watchButton.getText()=="DOWNLOAD"){
+	        		receiveFromUser();
+	        		return;
+	        	}
 	        	System.out.println("you press watch");
 	        	
 	        	Platform.runLater(new Runnable(){
@@ -221,7 +226,8 @@ public class CinemaController implements Initializable {
 						movieJsonObject.getString("owner"), 
 						movieJsonObject.getString("brief"),
 						movieJsonObject.getString("startTime"),
-						movieJsonObject.getString("endTime"));
+						movieJsonObject.getString("endTime"),
+						movieJsonObject.getString("ownerIP"));
 			}
 			ArrayList<User> userArrayList = new ArrayList<User>();
 			for(int i=0;i<userJsonArray.length();i++){
@@ -322,7 +328,7 @@ public class CinemaController implements Initializable {
 	}
 	
 	void receiveFromUser(){
-		String ipAddrString = "127.0.0.1";        
+		String ipAddrString = currentMovie.getMovieOwnerIPString();        
 		FileReceiver fileReceiver = new FileReceiver();
 		System.out.println("receive from ip");
 		Platform.runLater(new Runnable(){

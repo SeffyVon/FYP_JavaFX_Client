@@ -400,7 +400,8 @@ public class MyController implements Initializable {
 						movieJsonObject.getString("owner"), 
 						movieJsonObject.getString("brief"),
 						movieJsonObject.getString("startTime"),
-						movieJsonObject.getString("endTime"));
+						movieJsonObject.getString("endTime"),
+						movieJsonObject.getString("ownerIP"));
 			}
 			ArrayList<User> userArrayList = new ArrayList<User>();
 			for(int i=0;i<userJsonArray.length();i++){

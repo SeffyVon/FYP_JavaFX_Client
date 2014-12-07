@@ -7,19 +7,25 @@ public class Movie {
 	String startTString;
 	String endTString;
 	String imagePosterLocString;
+	String movieOwnerIPString;
 	
 	public Movie(String movieNameString,
 	String movieOwnerNameString,
 	String movieBriefString,
 	String startTString,
-	String endTString) {
+	String endTString,
+	String movieOwnerIPString) {
 		this.movieNameString = movieNameString;
 		this.movieOwnerNameString = movieOwnerNameString;
 		this.movieBriefString = movieBriefString;
 		this.startTString = startTString;
 		this.endTString = endTString;
+		this.movieOwnerIPString = movieOwnerIPString;
 	}
 	
+	public String getMovieOwnerIPString(){
+		return movieOwnerIPString;
+	}
 	public String getMovieNameString(){
 		return movieNameString;
 	}

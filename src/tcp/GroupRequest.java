@@ -21,7 +21,7 @@ public class GroupRequest {
 	
 	String hostAddrString;
 	public GroupRequest() {
-	    hostAddrString = "http://"+Config.macAddrString+":63342/OnlineCinema_Server/src/";
+	    hostAddrString = "http://127.0.0.1:63342/OnlineCinema_Server/src/";
 		System.out.println(hostAddrString);
 	}
 	
@@ -99,7 +99,7 @@ public class GroupRequest {
 	
 	public static void main(String[] args) {
 //		//System.out.println(getGroupsAndMovies("doge"));
-//		System.out.println(getGroupMems("doge"));
+		System.out.println(new GroupRequest().getGroupMems("doge"));
 //		JSONObject jsonObject= getGroupMems("doge");
 //		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 //		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
@@ -140,7 +140,7 @@ public class GroupRequest {
 		
 		//Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 		//System.out.println(currentTimestamp.toString());
-		new GroupRequest().sendGroupMessage("group0", "cate", "So beautiful!", new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:10:00");
+		//new GroupRequest().sendGroupMessage("group0", "cate", "So beautiful!", new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:10:00");
 		
 	}
 }
