@@ -44,6 +44,7 @@ import model.Movie;
 import model.User;
 import tcp.GroupRequest;
 import tcp.ProgressBarSyn;
+import view.UCell;
 import config.Config;
 
 public class CurrentMovieController implements Initializable{
@@ -73,8 +74,10 @@ public class CurrentMovieController implements Initializable{
 	TextField messageTextField;
 	@FXML
 	ListView GMessageListView;
-
-	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList();
+	@FXML
+	ListView<User> UListView;
+	ObservableList<User> observableList2 = FXCollections.observableArrayList(); // user list
+	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(); // group message list
 	private HashMap<String, User> userMap = new HashMap<String, User>();
 	String currentGroupName;
 	String userName;
@@ -281,6 +284,25 @@ public class CurrentMovieController implements Initializable{
 		this.userName = userName;
 	}
 	
+	public void setUListView(Group currentGroup){	
+		
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				ArrayList<User> userList = currentGroup.getUserList();
+
+			    observableList2.setAll(userList);
+			    UListView.setItems(observableList2);
+			    UListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
+			        @Override
+			        public ListCell<User> call(ListView<User> UListView) {
+			            return new UCell();
+			        }
+			    });
+			}
+		});
+
+	}
 	
 	public void setGMessageListView(Group currentGroup){	
 		
@@ -356,5 +378,7 @@ public class CurrentMovieController implements Initializable{
 		}
 
 	}
+	
+   
 
 }

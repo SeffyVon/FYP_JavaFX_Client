@@ -149,6 +149,7 @@ public class CinemaController implements Initializable {
 			    	        currentMovieController.setMovieMediaPane(currentMovie);
 			    	        currentMovieController.setUserMap(userMap);
 			    	        currentMovieController.setGMessageListView(groupMap.get(currentGroupName));
+			    	        currentMovieController.setUListView(groupMap.get(currentGroupName));
 			    	    } catch (IOException e) {
 			    	        throw new RuntimeException(e);
 			    	    }
