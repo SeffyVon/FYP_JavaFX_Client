@@ -56,7 +56,8 @@ public class FileSender extends Thread {
 	
 	 public static void main (String [] args ) throws IOException {
 		
-		 new FileSender("harrypotter").run();
+		// new FileSender("harrypotter").run();
+		 new FileSender("thehobbits").run();
 		
 	}
 

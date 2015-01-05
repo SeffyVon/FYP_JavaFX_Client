@@ -103,7 +103,7 @@ public class CinemaController implements Initializable {
 	Pane currentMoviePane;
 
 	Timer groupMessageTimer = null;
-	
+	GroupRequest groupRequest = new GroupRequest();
  	
 	Stage primaryStage;
 	
@@ -208,7 +208,7 @@ public class CinemaController implements Initializable {
 		
 		boolean hasFirst = false;
 		
-		JSONObject jsonObject= new GroupRequest().getGroupMems("doge");
+		JSONObject jsonObject= groupRequest.getGroupMems("doge");
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 			groupNameArrayList.add(iterator.next().toString());
@@ -331,9 +331,8 @@ public class CinemaController implements Initializable {
 	}
 	
 	void receiveFromUser(){
-		String ipAddrString = Config.macAddrString;        
 		FileReceiver fileReceiver = new FileReceiver();
-		System.out.println("receive from ip");
+		System.out.println("receive from ip" + Config.macAddrString);
 		Platform.runLater(new Runnable(){
 
 			@Override
@@ -342,7 +341,7 @@ public class CinemaController implements Initializable {
 			}
 			
 		});
-		fileReceiver.receiveFromIP(ipAddrString, currentMovie.getMovieFileNameString(), networkProgressBar, currentMovie.getPort(),currentMovie.getFilesize());
+		fileReceiver.receiveFromIP(currentMovie.getMovieOwnerIPString(), currentMovie.getMovieFileNameString(), networkProgressBar, currentMovie.getPort(),currentMovie.getFilesize());
 		
 	}
 	@SuppressWarnings("unchecked")
@@ -352,7 +351,7 @@ public class CinemaController implements Initializable {
 			
 			@Override
 			public void run() {
-				JSONObject jsonObject= new GroupRequest().getGroupMems(user.getUname());
+				JSONObject jsonObject= groupRequest.getGroupMems(user.getUname());
 				ArrayList<String> groupNameArrayList = new ArrayList<String>();
 				for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 					groupNameArrayList.add(iterator.next().toString());
@@ -442,7 +441,7 @@ public class CinemaController implements Initializable {
 			     //   	System.out.println("Current group:" + currentGroupName);
 			     //   	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
 			        	
-				    	ArrayList<GMessage> newMessageList = new GroupRequest().getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
+				    	ArrayList<GMessage> newMessageList = groupRequest.getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
 						if(!newMessageList.isEmpty()){	
 							groupMap.get(currentGroupName).setLastMessageTime(newMessageList.get(newMessageList.size()-1).getMessageTime());
 							Platform.runLater(new Runnable(){

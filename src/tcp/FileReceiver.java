@@ -147,7 +147,7 @@ public class FileReceiver {
         		    	   currentTot += bytesRead;
         		    	   final double currentTot2= currentTot;
         		    	 
-                           System.out.println(new Double(currentTot)/bytearray.length+" currentTot: " + currentTot + "byteRead" + bytearray.length);
+                           System.out.println(new Double(currentTot)/filesize+" currentTot: " + currentTot + "byteRead" + bytearray.length);
         		       }
         		    } while(bytesRead > -1);
         	
@@ -177,7 +177,7 @@ public class FileReceiver {
 	public static void main (String [] args ) throws IOException {
 	   FileReceiver fileReceiver = new FileReceiver();
 	   System.out.println("hey");
-	   fileReceiver.receiveFromIP_2("172.20.10.2", "harrypotter");
+	   fileReceiver.receiveFromIP_2("172.20.10.3", "harrypotter");
 	   
 	
   }

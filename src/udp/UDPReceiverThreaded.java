@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.controlsfx.control.action.Action;
-import org.controlsfx.dialog.Dialogs;
 
 import tcp.ProgressBarSyn;
 import config.Config;
@@ -29,7 +29,12 @@ public class UDPReceiverThreaded extends Thread{
 
             socket = new MulticastSocket(port);
             InetAddress address = InetAddress.getByName(host);
-			socket.joinGroup(address);
+            
+            SocketAddress socketAddress = new InetSocketAddress(host,port);
+            NetworkInterface networkInterface = NetworkInterface.getByName("en1");
+            
+			socket.joinGroup(socketAddress,networkInterface);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

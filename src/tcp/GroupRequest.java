@@ -21,8 +21,8 @@ public class GroupRequest {
 	
 	String hostAddrString;
 	public GroupRequest() {
-	    hostAddrString = "http://" + Config.macAddrString + ":63342/OnlineCinema_Server/src/";
-		System.out.println(hostAddrString);
+	    hostAddrString = "http://127.0.0.1:63342/OnlineCinema_Server/src/";
+		//System.out.println(hostAddrString);
 	}
 	
 
