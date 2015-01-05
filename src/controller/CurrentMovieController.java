@@ -2,22 +2,29 @@ package controller;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -29,10 +36,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Callback;
 import javafx.util.Duration;
+import model.GMessage;
+import model.Group;
 import model.Movie;
+import model.User;
 import tcp.GroupRequest;
 import tcp.ProgressBarSyn;
+import config.Config;
 
 public class CurrentMovieController implements Initializable{
 	@FXML
@@ -54,13 +66,20 @@ public class CurrentMovieController implements Initializable{
 	@FXML
 	Button sendButton;
 	@FXML
+	Label movieTitleLabel;
+	@FXML
 	StackPane centerStackPane;
 	@FXML
 	TextField messageTextField;
-	
+	@FXML
+	ListView GMessageListView;
+
+	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList();
+	private HashMap<String, User> userMap = new HashMap<String, User>();
 	String currentGroupName;
 	String userName;
-
+	
+	Timer groupMessageTimer = null;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -88,6 +107,9 @@ public class CurrentMovieController implements Initializable{
 				new Thread(t).start();
 	        }
 		});
+		
+
+		
 		
 		messageTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -117,13 +139,18 @@ public class CurrentMovieController implements Initializable{
 		});
 	}
 	
+	public void setUserMap(HashMap<String, User> userMap){
+		this.userMap = userMap;
+	}
+	
 	@SuppressWarnings("unchecked")
 	void setMovieMediaPane(Movie currentMovie){
+	
 		System.out.println("filename" + currentMovie.getMovieFileNameString());
 		Media mv = new Media(new File("resources/video/"+currentMovie.getMovieFileNameString()+".mp4").toURI().toString());
 		MediaPlayer mp = new MediaPlayer(mv);
 		mp.setAutoPlay(false);
-		
+		movieTitleLabel.setText(currentMovie.getMovieNameString());
         volumeSlider.setValue(80);
         mp.setVolume(0.8);
 		mediaView.setMediaPlayer(mp);
@@ -252,6 +279,82 @@ public class CurrentMovieController implements Initializable{
 	
 	public void setUserName(String userName){
 		this.userName = userName;
+	}
+	
+	
+	public void setGMessageListView(Group currentGroup){	
+		
+		if(groupMessageTimer!=null)
+			groupMessageTimer.cancel();
+		
+		Platform.runLater(new Runnable() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void run() {
+				observableList3 =  currentGroup.getList();
+				GMessageListView.setItems(observableList3);
+
+			    System.out.println(" the items in [set] from map: " + currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
+			    
+			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
+			        @Override
+			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
+			            return new GMCell();
+			        }
+			    });
+			}
+		});
+		
+		groupMessageTimer = new Timer();
+		groupMessageTimer.schedule(
+			    new TimerTask() {
+
+			        @Override
+			        public void run() {
+			     //   	System.out.println("Current group:" + currentGroupName);
+			     //   	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
+			        	GroupRequest groupRequest = new GroupRequest();
+				    	ArrayList<GMessage> newMessageList = groupRequest.getGroupMessage(currentGroupName, currentGroup.getLastMessageTime());
+						if(!newMessageList.isEmpty()){	
+							currentGroup.setLastMessageTime(newMessageList.get(newMessageList.size()-1).getMessageTime());
+							Platform.runLater(new Runnable(){
+								@Override
+								public void run() {
+						//			System.out.println("Receive new group messages 2");
+						//			System.out.println("1 observableList in add new items " + observableList3);
+									observableList3.addAll(newMessageList);
+						//			System.out.println("observableList in add new items " + observableList3);
+									
+								}
+							});
+
+						}
+			        }
+			    }, 0, Config.RefreshGroupMessageRate);
+		
+
+	}
+	
+	public class GMCell extends ListCell<GMessage>{
+		
+		@Override
+		public void updateItem(GMessage gMessage, boolean empty){
+		    super.updateItem(gMessage,empty);
+		    if(gMessage != null) {
+		        GMData data = new GMData();
+		        Platform.runLater(new Runnable(){
+					@Override
+					public void run() {
+						data.setImage(userMap.get(gMessage.getUname()).getMiddleImage());
+				        data.setInfo(gMessage.getMessage());
+				        setGraphic(data.getBox());
+					}
+		        	
+		        });
+
+		    }
+		}
+
 	}
 
 }
