@@ -72,11 +72,11 @@ public class CurrentMovieController implements Initializable{
 	@FXML
 	TextField messageTextField;
 	@FXML
-	ListView GMessageListView;
+	ListView<String> GMessageListView;
 	@FXML
 	ListView<User> UListView;
 	ObservableList<User> observableList2 = FXCollections.observableArrayList(); // user list
-	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(); // group message list
+	ObservableList<String> observableList3 = FXCollections.observableArrayList(); // group message list
 	private HashMap<String, User> userMap = new HashMap<String, User>();
 	String currentGroupName;
 	String userName;
@@ -121,7 +121,7 @@ public class CurrentMovieController implements Initializable{
 
 						@Override
 						protected Void call() throws Exception {
-							ChatClientEndpoint.sendGMessage(currentGroupName);
+							ChatClientEndpoint.sendGMessage(messageTextField.getText());
 						//	System.out.println("send"+currentGroupName + " " +userName);
 						//	new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
 							Platform.runLater(new Runnable() {
@@ -319,13 +319,13 @@ public class CurrentMovieController implements Initializable{
 				GMessageListView.setItems(observableList3);
 
 			    System.out.println(" SET Observable List " + currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
-			    
-			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
-			        @Override
-			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
-			            return new GMCell();
-			        }
-			    });
+//			    
+//			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
+//			        @Override
+//			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
+//			            return new GMCell();
+//			        }
+//			    });
 			}
 		});
 		
@@ -337,6 +337,7 @@ public class CurrentMovieController implements Initializable{
 		
 		@Override
 		public void updateItem(GMessage gMessage, boolean empty){
+
 		    super.updateItem(gMessage,empty);
 		    if(gMessage != null) {
 		        GMData data = new GMData();
