@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -45,7 +44,7 @@ import model.User;
 import tcp.GroupRequest;
 import tcp.ProgressBarSyn;
 import view.UCell;
-import config.Config;
+import websocket.ChatClientEndpoint;
 
 public class CurrentMovieController implements Initializable{
 	@FXML
@@ -94,15 +93,14 @@ public class CurrentMovieController implements Initializable{
 
 					@Override
 					protected Void call() throws Exception {
+						ChatClientEndpoint.sendGMessage(messageTextField.getText());
 						Platform.runLater(new Runnable() {
-							
 							@Override
 							public void run() {
 								messageTextField.setText("");
 							}
 						});
-						new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
-
+						
 						return null;
 					}
 					
@@ -123,8 +121,9 @@ public class CurrentMovieController implements Initializable{
 
 						@Override
 						protected Void call() throws Exception {
-							System.out.println("send"+currentGroupName + " " +userName);
-							new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
+							ChatClientEndpoint.sendGMessage(currentGroupName);
+						//	System.out.println("send"+currentGroupName + " " +userName);
+						//	new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
 							Platform.runLater(new Runnable() {
 								
 								@Override
@@ -243,6 +242,7 @@ public class CurrentMovieController implements Initializable{
             public void handle(ActionEvent event) {
             	centerStackPane.getChildren().remove(centerStackPane.getChildren().size()-1);
             	mp.volumeProperty().setValue(0);
+        		ChatClientEndpoint.closeChatClientEndpoint();
             }
         });
 		timeSlider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
@@ -309,14 +309,16 @@ public class CurrentMovieController implements Initializable{
 		if(groupMessageTimer!=null)
 			groupMessageTimer.cancel();
 		
+		ChatClientEndpoint.createChatClientEndpoint(observableList3,"doge");
+		
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				observableList3 =  currentGroup.getList();
+			
 				GMessageListView.setItems(observableList3);
 
-			    System.out.println(" the items in [set] from map: " + currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
+			    System.out.println(" SET Observable List " + currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
 			    
 			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
 			        @Override
@@ -327,33 +329,7 @@ public class CurrentMovieController implements Initializable{
 			}
 		});
 		
-		groupMessageTimer = new Timer();
-		groupMessageTimer.schedule(
-			    new TimerTask() {
-
-			        @Override
-			        public void run() {
-			     //   	System.out.println("Current group:" + currentGroupName);
-			     //   	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
-			        	GroupRequest groupRequest = new GroupRequest();
-				    	ArrayList<GMessage> newMessageList = groupRequest.getGroupMessage(currentGroupName, currentGroup.getLastMessageTime());
-						if(!newMessageList.isEmpty()){	
-							currentGroup.setLastMessageTime(newMessageList.get(newMessageList.size()-1).getMessageTime());
-							Platform.runLater(new Runnable(){
-								@Override
-								public void run() {
-						//			System.out.println("Receive new group messages 2");
-						//			System.out.println("1 observableList in add new items " + observableList3);
-									observableList3.addAll(newMessageList);
-						//			System.out.println("observableList in add new items " + observableList3);
-									
-								}
-							});
-
-						}
-			        }
-			    }, 0, Config.RefreshGroupMessageRate);
-		
+	
 
 	}
 	
