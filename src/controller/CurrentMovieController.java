@@ -3,7 +3,6 @@ package controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -26,6 +25,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -41,7 +41,6 @@ import model.GMessage;
 import model.Group;
 import model.Movie;
 import model.User;
-import tcp.GroupRequest;
 import tcp.ProgressBarSyn;
 import view.UCell;
 import websocket.ChatClientEndpoint;
@@ -72,11 +71,11 @@ public class CurrentMovieController implements Initializable{
 	@FXML
 	TextField messageTextField;
 	@FXML
-	ListView<String> GMessageListView;
+	ListView<GMessage> GMessageListView;
 	@FXML
 	ListView<User> UListView;
 	ObservableList<User> observableList2 = FXCollections.observableArrayList(); // user list
-	ObservableList<String> observableList3 = FXCollections.observableArrayList(); // group message list
+	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // group message list
 	private HashMap<String, User> userMap = new HashMap<String, User>();
 	String currentGroupName;
 	String userName;
@@ -319,13 +318,8 @@ public class CurrentMovieController implements Initializable{
 				GMessageListView.setItems(observableList3);
 
 			    System.out.println(" SET Observable List " + currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
-//			    
-//			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
-//			        @Override
-//			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
-//			            return new GMCell();
-//			        }
-//			    });
+//			    (ListView<GMessage> param)
+			    GMessageListView.setCellFactory((ListView<GMessage> l) -> new GMCell());
 			}
 		});
 		
@@ -334,12 +328,12 @@ public class CurrentMovieController implements Initializable{
 	}
 	
 	public class GMCell extends ListCell<GMessage>{
-		
 		@Override
 		public void updateItem(GMessage gMessage, boolean empty){
-
+			
 		    super.updateItem(gMessage,empty);
-		    if(gMessage != null) {
+		    if(!empty && (gMessage != null)) {
+		    	System.out.println("Observable list size"+ observableList3.size()+gMessage.getMessage());
 		        GMData data = new GMData();
 		        Platform.runLater(new Runnable(){
 					@Override
@@ -347,10 +341,18 @@ public class CurrentMovieController implements Initializable{
 						data.setImage(userMap.get(gMessage.getUname()).getMiddleImage());
 				        data.setInfo(gMessage.getMessage());
 				        setGraphic(data.getBox());
+				       
 					}
 		        	
 		        });
 
+		    }else{
+		    	Platform.runLater(new Runnable(){
+		    		@Override
+					public void run() {
+						setGraphic(null);
+					}
+		    	});
 		    }
 		}
 
