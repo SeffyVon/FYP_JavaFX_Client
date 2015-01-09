@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import model.User;
 import tcp.UserRequest;
 import config.Config;
+import config.Profile;
 
 public class LoginController implements Initializable{
 	
@@ -68,20 +69,15 @@ public class LoginController implements Initializable{
 	            String pword = pwordField.getText();
 	            UserRequest userRequest = new UserRequest();
 	            if( userRequest.userLogin(uname, pword, Config.localAddrString, true)){
-	            	//FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/MyLayout.fxml"));
 	            	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/Cinema.fxml"));
 	                
 	            	Pane GLayout = null;
 					try {
+						Profile.currentUser = new User(uname,Config.localAddrString);
 						GLayout = fxmlLoader.load();
-						//MyController myController = fxmlLoader.getController();
-//						myController.setUser(new User(uname,Config.localAddrString));
-//						myController.prepareGroups();
-//						myController.setGListView();
-//						myController.setThisStage(primaryStage);
 						CinemaController cinemaController = fxmlLoader.getController();
-						cinemaController.setUser(new User(uname,Config.localAddrString));
 						cinemaController.prepareGroups();
+						cinemaController.setUser();
 						cinemaController.setGListView();
 						primaryStage.setResizable(false);
 						primaryStage.setX(0);

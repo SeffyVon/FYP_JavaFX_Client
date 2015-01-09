@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Timer;
 
+import config.Profile;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -76,15 +77,16 @@ public class CurrentMovieController implements Initializable{
 	ListView<User> UListView;
 	ObservableList<User> observableList2 = FXCollections.observableArrayList(); // user list
 	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // group message list
-	private HashMap<String, User> userMap = new HashMap<String, User>();
-	String currentGroupName;
-	String userName;
+
+
+
 	
 	Timer groupMessageTimer = null;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		System.out.println("init current movie controller");
+		setGMessageListView();
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
@@ -121,8 +123,6 @@ public class CurrentMovieController implements Initializable{
 						@Override
 						protected Void call() throws Exception {
 							ChatClientEndpoint.sendGMessage(messageTextField.getText());
-						//	System.out.println("send"+currentGroupName + " " +userName);
-						//	new GroupRequest().sendGroupMessage(currentGroupName, userName, messageTextField.getText(), new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString(), "01:01:01");
 							Platform.runLater(new Runnable() {
 								
 								@Override
@@ -140,9 +140,6 @@ public class CurrentMovieController implements Initializable{
 		});
 	}
 	
-	public void setUserMap(HashMap<String, User> userMap){
-		this.userMap = userMap;
-	}
 	
 	@SuppressWarnings("unchecked")
 	void setMovieMediaPane(Movie currentMovie){
@@ -275,14 +272,6 @@ public class CurrentMovieController implements Initializable{
 		this.centerStackPane = centerStackPane;
 	}
 	
-	public void setGroupName(String groupName){
-		this.currentGroupName = groupName;
-	}
-	
-	public void setUserName(String userName){
-		this.userName = userName;
-	}
-	
 	public void setUListView(Group currentGroup){	
 		
 		Platform.runLater(new Runnable() {
@@ -303,12 +292,12 @@ public class CurrentMovieController implements Initializable{
 
 	}
 	
-	public void setGMessageListView(Group currentGroup){	
+	public void setGMessageListView(){	
 		
 		if(groupMessageTimer!=null)
 			groupMessageTimer.cancel();
 		
-		ChatClientEndpoint.createChatClientEndpoint(observableList3,"doge");
+		ChatClientEndpoint.createChatClientEndpoint(observableList3);
 		
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
@@ -317,8 +306,7 @@ public class CurrentMovieController implements Initializable{
 			
 				GMessageListView.setItems(observableList3);
 
-			    System.out.println(" SET Observable List " + currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
-//			    (ListView<GMessage> param)
+			    System.out.println(" SET Observable List " + Profile.currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
 			    GMessageListView.setCellFactory((ListView<GMessage> l) -> new GMCell());
 			}
 		});
@@ -338,7 +326,7 @@ public class CurrentMovieController implements Initializable{
 		        Platform.runLater(new Runnable(){
 					@Override
 					public void run() {
-						data.setImage(userMap.get(gMessage.getUname()).getMiddleImage());
+						data.setImage(Profile.userMap.get(gMessage.getUname()).getSmallImage());
 				        data.setInfo(gMessage.getMessage());
 				        setGraphic(data.getBox());
 				       

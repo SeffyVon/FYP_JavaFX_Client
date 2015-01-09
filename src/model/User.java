@@ -36,4 +36,7 @@ public class User {
 	public String getUname(){
 		return uname;
 	}
+	public Image getSmallImage() {
+		return smallImageView.getImage();
+	}
 }

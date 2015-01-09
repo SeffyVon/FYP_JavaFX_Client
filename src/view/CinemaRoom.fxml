@@ -11,7 +11,7 @@
 
 <Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CurrentMovieController">
    <children>
-      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;" stylesheets="@../../../../Documents/workspace2/OCJavafx/src/view/Cinema.css">
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;" stylesheets="@Cinema.css">
          <children>
             <VBox>
                <children>

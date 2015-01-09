@@ -55,6 +55,7 @@ import tcp.GroupRequest;
 import view.GCell;
 import view.UCell;
 import config.Config;
+import config.Profile;
 
 public class CinemaController implements Initializable {
 
@@ -108,14 +109,11 @@ public class CinemaController implements Initializable {
 	MediaPlayer mp;
 	File currentVideoFile = null;	
 	Movie currentMovie = null;
-	
-	String currentGroupName = null;	
-	User user = null;
-	private HashMap<String, Group> groupMap = new HashMap<String, Group>();
-	private HashMap<String, User> userMap = new HashMap<String, User>();
-	private Set<String> gStringSet = new HashSet<String>();
+
+
+
 	ObservableList observableList = FXCollections.observableArrayList();
-	private Set<String> uStringSet = new HashSet<String>();
+
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
 	
 	@Override
@@ -143,14 +141,9 @@ public class CinemaController implements Initializable {
 			    	        CurrentMovieController currentMovieController = fxmlLoader.getController();
 			    	        if(currentMovie == null)
 			    	        	return;
-			    	        currentMovieController.setGroupName(currentGroupName);
-			    	        currentMovieController.setUserName(user.getUname());
 			    	        currentMovieController.setCenterStackPane(centerStackPane);
 			    	        currentMovieController.setMovieMediaPane(currentMovie);
-			    	        currentMovieController.setUserMap(userMap);
-			    	        currentMovieController.setGMessageListView(groupMap.get(currentGroupName));
-			    	        currentMovieController.setUListView(groupMap.get(currentGroupName));
-			    	    } catch (IOException e) {
+			    	       } catch (IOException e) {
 			    	        throw new RuntimeException(e);
 			    	    }
 			    	    //centerStackPane.getChildren().get(0);
@@ -193,10 +186,9 @@ public class CinemaController implements Initializable {
 		}
 	}
 	
-	public void setUser(User user){
-		this.user = user;
-		unameLabel.setText(user.getUname());
-		userImageView.setImage(user.getMiddleImage());
+	public void setUser(){
+		unameLabel.setText(Profile.currentUser.getUname());
+		userImageView.setImage(Profile.currentUser.getMiddleImage());
 	}
 	
 	public void setThisStage(Stage stage){
@@ -207,7 +199,7 @@ public class CinemaController implements Initializable {
 		
 		boolean hasFirst = false;
 		
-		JSONObject jsonObject= groupRequest.getGroupMems("doge");
+		JSONObject jsonObject= groupRequest.getGroupMems(Profile.currentUser.getUname());
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 			groupNameArrayList.add(iterator.next().toString());
@@ -236,16 +228,16 @@ public class CinemaController implements Initializable {
 				JSONObject userJsonObject = userJsonArray.getJSONObject(i);
 				User user = new User(userJsonObject.getString("uname"), userJsonObject.getString("ipAddr"));
 				userArrayList.add(user);
-				if(!userMap.containsKey(user.getUname()))
-					userMap.put(user.getUname(), user);
+				if(!Profile.userMap.containsKey(user.getUname()))
+					Profile.userMap.put(user.getUname(), user);
 			}
 			Group group = new Group(groupName, userArrayList, movie);	
 			if(hasFirst == false){
-				currentGroupName = groupName;
+				Profile.currentGroup = group;
 				hasFirst = true;
-			//	setGMessageListView();
+				
 			}
-			groupMap.put(groupName, group);
+			Profile.groupMap.put(groupName, group);
 		}
 		
 		
@@ -291,13 +283,12 @@ public class CinemaController implements Initializable {
 	
 	void setMoviePane(){
 
-		if(currentGroupName == null){
+		if(Profile.currentGroup == null){
 			noMovie();
 			return;
 		}
 		
-		
-		currentMovie = groupMap.get(currentGroupName).getMovie();
+		currentMovie = Profile.currentGroup.getMovie();
 		System.out.println("setcurrentMovie"+currentMovie);
 		
 		if( currentMovie == null){
@@ -350,7 +341,7 @@ public class CinemaController implements Initializable {
 			
 			@Override
 			public void run() {
-				JSONObject jsonObject= groupRequest.getGroupMems(user.getUname());
+				JSONObject jsonObject= groupRequest.getGroupMems(Profile.currentUser.getUname());
 				ArrayList<String> groupNameArrayList = new ArrayList<String>();
 				for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 					groupNameArrayList.add(iterator.next().toString());
@@ -369,11 +360,10 @@ public class CinemaController implements Initializable {
 			    // http://code.makery.ch/blog/javafx-8-event-handling-examples/
 			    GListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			    	
-			    	currentGroupName = newValue.toString();
-			     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
+			    	Profile.currentGroup = Profile.groupMap.get(newValue.toString());
+			     	System.out.println("ListView Selection Changed (selected: " + Profile.currentGroup.getGroupName() + ")");
 			        int groupNum = GListView.getSelectionModel().getSelectedIndex();
 			        System.out.println("selected Group:"+groupNum);
-			//        setGMessageListView();
 					setUListView();
 					setMoviePane();
 			    });
@@ -389,7 +379,7 @@ public class CinemaController implements Initializable {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				Group group = groupMap.get(currentGroupName);
+				Group group = Profile.groupMap.get(Profile.currentGroup.getGroupName());
 				ArrayList<User> userList = group.getUserList();
 
 			    observableList2.setAll(userList);

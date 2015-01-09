@@ -23,20 +23,21 @@ import model.GMessage;
 import model.User;
 
 import org.glassfish.tyrus.client.ClientManager;
+
+import config.Profile;
  
 @ClientEndpoint
 public class ChatClientEndpoint {
  
     static Session session=null;
-    static String unameString = null;
 
     static ObservableList<GMessage> observableList3 = FXCollections.observableArrayList();
    
     
-    public static void createChatClientEndpoint(ObservableList<GMessage> observableList, String uname){
+    public static void createChatClientEndpoint(ObservableList<GMessage> observableList){
 		observableList3 = observableList;
     	javax.websocket.WebSocketContainer container = javax.websocket.ContainerProvider.getWebSocketContainer();
-		unameString = uname;
+
 		try {
 			session = container.connectToServer(ChatClientEndpoint.class, 
 					new URI("ws://localhost:8081"));
@@ -49,7 +50,7 @@ public class ChatClientEndpoint {
     public static void closeChatClientEndpoint(){
     	System.out.println("Close ChatEndpoint client... " + session.getId());
         try {
-			session.close( new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, unameString+"leave the room" ));
+			session.close( new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, Profile.currentUser.getUname()+"leave the room" ));
 			session=null;
 			Platform.runLater(new Runnable(){
     			@Override
@@ -72,7 +73,7 @@ public class ChatClientEndpoint {
     			@Override
     			public void run() {
     				 
-    			     observableList3.add(new GMessage("Connected","00:00:01" ,"2015-1-3",unameString,"group0"));
+    			     observableList3.add(new GMessage("Connected","00:00:00" ,"2015-1-3",Profile.currentUser.getUname(),Profile.currentGroup.getGroupName()));
     				 
     			}
     			
@@ -83,17 +84,16 @@ public class ChatClientEndpoint {
     }
  
     @OnMessage
-    public static String onMessage(String message) {
+    public static void onMessage(String message) {
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Received ...." + message);
         Platform.runLater(new Runnable(){
 			@Override
 			public void run() {
 				
-				observableList3.add(new GMessage("Received ...." + message,"00:00:01" ,"2015-1-3",unameString,"group0"));
+				observableList3.add(new GMessage("Received ...." + message,"00:00:01" ,"2015-1-3","cate" ,"group0"));
 			}
         });
-        return message;
     }
  
  
@@ -103,14 +103,14 @@ public class ChatClientEndpoint {
         Platform.runLater(new Runnable(){
 			@Override
 			public void run() {
-				observableList3.add(new GMessage("Session" + session.getId() + "close because of" + closeReason,"00:00:01" ,"2015-1-3","doge","group0"));
+				observableList3.add(new GMessage("Session" + session.getId() + "close because of" + closeReason,"00:00:01" ,"2015-1-3","cate","group0"));
 			}
         });
     }
  
     public static void main(String[] args) {
     	ObservableList<GMessage> observableList = FXCollections.observableArrayList();
-    	ChatClientEndpoint.createChatClientEndpoint(observableList,"doge");
+    	ChatClientEndpoint.createChatClientEndpoint(observableList);
     	System.out.println(observableList.size());
     	ChatClientEndpoint.sendGMessage("helo");
     	System.out.println(observableList.size());
@@ -125,7 +125,7 @@ public class ChatClientEndpoint {
 			Platform.runLater(new Runnable(){
 				@Override
 				public void run() {
-					observableList3.add(new GMessage("Sending ...." + message,"00:00:01" ,"2015-1-3",unameString,"group0"));
+					observableList3.add(new GMessage("Sending ...." + message,"00:00:01" ,"2015-1-3",Profile.currentUser.getUname(),"group0"));
 				}
 				
 			});
