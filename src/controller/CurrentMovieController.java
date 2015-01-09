@@ -87,6 +87,8 @@ public class CurrentMovieController implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 		System.out.println("init current movie controller");
 		setGMessageListView();
+		setUListView();
+		
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
@@ -272,12 +274,12 @@ public class CurrentMovieController implements Initializable{
 		this.centerStackPane = centerStackPane;
 	}
 	
-	public void setUListView(Group currentGroup){	
+	public void setUListView(){	
 		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				ArrayList<User> userList = currentGroup.getUserList();
+				ArrayList<User> userList = Profile.currentGroup.getUserList();
 
 			    observableList2.setAll(userList);
 			    UListView.setItems(observableList2);

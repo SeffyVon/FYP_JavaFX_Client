@@ -19,17 +19,13 @@ import config.Config;
 
 public class GroupRequest {
 	
-	String hostAddrString;
-	public GroupRequest() {
-	    hostAddrString = "http://127.0.0.1:63342/OnlineCinema_Server/src/";
-		//System.out.println(hostAddrString);
-	}
+
 	
 
 	
 	public JSONObject getGroupMems(String uname){
 		try {
-			HttpResponse<JsonNode> responseString = Unirest.post(hostAddrString + "groups/getGroupMems.php")
+			HttpResponse<JsonNode> responseString = Unirest.post(Config.hostAddrString + "groups/getGroupMems.php")
 			  .field("uname",uname)
 			  .asJson();
 			if(!responseString.getBody().toString().equals("{}"))
