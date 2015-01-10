@@ -47,6 +47,9 @@ import view.UCell;
 import websocket.ChatClientEndpoint;
 
 public class CurrentMovieController implements Initializable{
+	
+	@FXML
+	Label groupName;
 	@FXML
 	MediaView mediaView;
 	@FXML
@@ -88,7 +91,7 @@ public class CurrentMovieController implements Initializable{
 		System.out.println("init current movie controller");
 		setGMessageListView();
 		setUListView();
-		
+		groupName.setText(Profile.currentGroup.getGroupName());
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {

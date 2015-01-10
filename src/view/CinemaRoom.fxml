@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.BorderPane?>
 
 
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CurrentMovieController">
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CurrentMovieController" stylesheets="@Cinema.css">
    <children>
-      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;" stylesheets="@Cinema.css">
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;" >
          <children>
             <VBox>
                <children>
@@ -48,8 +48,8 @@
                      </effect>
                   </Button>
                   <MediaView fx:id="mediaView" fitHeight="420.0" fitWidth="980.0" layoutY="70.0" />
-                  <Button id="playButton" fx:id="playButton" layoutX="16.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="42.0" stylesheets="@application.css" />
-                  <ListView fx:id="UListView" layoutX="27.0" layoutY="610.0" orientation="HORIZONTAL" prefHeight="80.0" prefWidth="934.0" styleClass="groupScene" stylesheets="@application.css" />
+                  <Button id="playButton" fx:id="playButton" layoutX="16.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="42.0"  />
+                  <ListView fx:id="UListView" layoutX="27.0" layoutY="610.0" orientation="HORIZONTAL" prefHeight="80.0" prefWidth="934.0" styleClass="groupScene"  />
                </children>
             </Pane>
          </children>

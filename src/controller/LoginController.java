@@ -37,7 +37,6 @@ public class LoginController implements Initializable{
 	@FXML
 	private Label wrongLabel;
 	
-	Stage primaryStage = null;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -63,7 +62,7 @@ public class LoginController implements Initializable{
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
-	            primaryStage.getScene().setCursor(Cursor.WAIT);
+	            Profile.primaryStage.getScene().setCursor(Cursor.WAIT);
 	            System.out.println("You pressed login Button.");
 	            String uname = unameField.getText();
 	            String pword = pwordField.getText();
@@ -79,17 +78,17 @@ public class LoginController implements Initializable{
 						cinemaController.prepareGroups();
 						cinemaController.setUser();
 						cinemaController.setGListView();
-						primaryStage.setResizable(false);
-						primaryStage.setX(0);
-						primaryStage.setY(0);
-						primaryStage.setWidth(1280);
-						primaryStage.setHeight(724);
-						primaryStage.getScene().setCursor(Cursor.DEFAULT);
-						cinemaController.setThisStage(primaryStage);
+						Profile.primaryStage.setResizable(false);
+						Profile.primaryStage.setX(0);
+						Profile.primaryStage.setY(0);
+						Profile.primaryStage.setWidth(1280);
+						Profile.primaryStage.setHeight(724);
+						Profile.primaryStage.getScene().setCursor(Cursor.DEFAULT);
+						cinemaController.setThisStage(Profile.primaryStage);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-	            	primaryStage.setScene(new Scene(GLayout));
+					Profile.primaryStage.setScene(new Scene(GLayout));
 	            	
 	            }else{
 	            	wrongLabel.setVisible(true);
@@ -98,8 +97,5 @@ public class LoginController implements Initializable{
 	    });
 	}
 	
-	public void setThisStage(Stage stage){
-		this.primaryStage = stage;
-	}
 
 }

@@ -9,19 +9,20 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import config.Profile;
 import controller.LoginController;
 
 //http://code.makery.ch/java/javafx-8-tutorial-part1/
 
 public class MainApp extends Application {
 
-	public Stage primaryStage;
+	
 	private AnchorPane rootLayout;
 	
 	@Override
 	public void start(Stage primaryStage) {
-		  	this.primaryStage = primaryStage;
-	        this.primaryStage.setTitle("OnlineCinemaApp");
+			Profile.primaryStage = primaryStage;
+			Profile.primaryStage.setTitle("OnlineCinemaApp");
 	        initRootLayout();
 	       
 	}
@@ -35,26 +36,18 @@ public class MainApp extends Application {
             fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
             rootLayout = (AnchorPane)fxmlLoader.load();
             LoginController controller = fxmlLoader.getController();
-            controller.setThisStage(primaryStage);
-
-	            controller.setThisStage(primaryStage);
+            
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
-            primaryStage.show();
+            Profile.primaryStage.setScene(scene);
+            Profile.primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
 		
 	}
-	   /**
-     * Returns the main stage.
-     * @return
-     */
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
+
 
 
 	public static void main(String[] args) {

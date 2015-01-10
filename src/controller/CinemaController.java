@@ -99,6 +99,8 @@ public class CinemaController implements Initializable {
 	@FXML
 	StackPane centerStackPane;
 	@FXML
+	StackPane innerStackPane;
+	@FXML
 	Pane currentMoviePane;
 
 
@@ -125,10 +127,11 @@ public class CinemaController implements Initializable {
 	        public void handle(ActionEvent event) {
 	        	
 	        	if(watchButton.getText()=="DOWNLOAD"){
+	        		System.out.println("you press DOWNLOAD");
 	        		receiveFromUser();
 	        		return;
 	        	}
-	        	System.out.println("you press watch");
+	        	System.out.println("you press WATCH");
 	        	
 	        	Platform.runLater(new Runnable(){
 
@@ -245,12 +248,20 @@ public class CinemaController implements Initializable {
 	}
 	
 	public void noMovie() {
-		setLabelVisibility(false);
-		movieTitleLabel.setText("");
-		movieBriefTextArea.setText("");
-		startTLabel.setText("");
-		endTLabel.setText("");
-		watchButton.setText("ADD NOW!");
+		if(moviePane.isVisible()){
+			moviePane.setVisible(false);
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/AddNewMovie.fxml"));
+			try {
+				BorderPane moviePane2 = fxmlLoader.load();
+				innerStackPane.getChildren().add(moviePane2);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			UploadController uploadController = fxmlLoader.getController();
+			
+		}
+		
 	}
 	
 	void addMovie(){
@@ -293,9 +304,12 @@ public class CinemaController implements Initializable {
 		
 		if( currentMovie == null){
 			noMovie();
-			
+			return;
 		}else{
-
+			if(!moviePane.isVisible()){
+				innerStackPane.getChildren().remove(innerStackPane.getChildren().size()-1);
+				moviePane.setVisible(true);
+			}
 			movieTitleLabel.setText(currentMovie.getMovieNameString());
 			movieBriefTextArea.setText(currentMovie.getMovieBriefString());
 			startTLabel.setText(currentMovie.getStartTimeString());

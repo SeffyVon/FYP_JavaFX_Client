@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javafx.stage.Stage;
 import model.Group;
 import model.User;
 
@@ -15,4 +16,5 @@ public class Profile {
 	public static Set<String> gStringSet = new HashSet<String>();
 	public static Set<String> uStringSet = new HashSet<String>();
 	public static String privateKeyString = "";
+	public static Stage primaryStage;
 }
