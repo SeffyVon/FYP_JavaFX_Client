@@ -6,6 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Unirest"/>
 	<classpathentry kind="lib" path="lib/controlsfx-8.20.8.jar"/>
 	<classpathentry kind="lib" path="lib/openjfx-dialogs-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/javax.json-1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/websocket-client-libs"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

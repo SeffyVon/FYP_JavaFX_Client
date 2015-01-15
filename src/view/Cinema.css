@@ -223,3 +223,7 @@
 -fx-text-fill: -fx-text-inner-color;
 }
 
+#GMessageListView .list-cell
+{
+	-fx-text-fill:white;
+}

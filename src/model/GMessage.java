@@ -5,33 +5,64 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
+import javax.json.Json;
+import javax.websocket.EncodeException;
+
 
 public class GMessage {
-    public StringProperty message_text;
-    public StringProperty movie_time;
-    public StringProperty message_time;
-    public StringProperty uname;
-    public StringProperty groupname;
-    
-    public GMessage(String message_text, String movie_time, String message_time, String uname, String groupname) {
-		messageTextProperty().set(message_text);
+	private StringProperty message_type; // Download, Sync, Chat, Status
+	private StringProperty message_text;
+	private StringProperty movie_time;
+	private StringProperty message_time;
+	private StringProperty uname;
+	private StringProperty uname2;
+	private StringProperty groupname;
+	
+	public GMessage(String message_type, String message_text, String movie_time, String message_time, String uname, String uname2, String groupname) {
+		uNameProperty().set(uname);
+		uName2Property().set(uname2);
+		groupNameProperty().set(groupname);
 		movieTimeProperty().set(movie_time);
 		messageTimeProperty().set(message_time);
-		uNameProperty().set(uname);
-		groupNameProperty().set(groupname);
-	}
-    
-    public String getMessage(){
-    	return uNameProperty().get()+" : "+messageTextProperty().get();
+		messageTypeProperty().set(message_type);
+		messageTextProperty().set(message_text);
     }
     
+    
     public String getMessageTime() {
-		return messageTimeProperty().get();
+		return messageTimeProperty().getValue();
 	}
     
     public String getUname() {
-		return uNameProperty().get();
+		return uNameProperty().getValue();
 	}
+    
+    public String getMessageText() {
+		return messageTextProperty().getValue();
+	}
+    
+    public String getMessageType() {
+		return messageTypeProperty().getValue();
+	}
+    
+    public String getMovieTime() {
+		return movieTimeProperty().getValue();
+	}
+    
+    public String getUname2(){
+    	return uName2Property().getValue();
+    }
+    
+    public String getGroupName(){
+    	return groupNameProperty().getValue();
+    }
+    
+    public StringProperty messageTypeProperty(){
+    	if(message_type==null){
+    		message_type = new SimpleStringProperty();
+    	}
+        return message_type;
+    }
     
     public StringProperty messageTextProperty(){
     	if(message_text==null){
@@ -61,14 +92,57 @@ public class GMessage {
         return uname;
     }
     
+    public StringProperty uName2Property(){
+    	if(uname2==null){
+    		uname2 = new SimpleStringProperty();
+    	}
+        return uname2;
+    }
+    
     public StringProperty groupNameProperty(){
     	if(groupname==null){
     		groupname = new SimpleStringProperty();
     	}
         return groupname;
     }
+    
+
+    
     public static Callback<GMessage, Observable[]> extractor() {
-    	   return (GMessage p) -> new Observable[]{p.messageTextProperty(), p.messageTimeProperty(), p.movieTimeProperty(), p.groupNameProperty(),p.uNameProperty()};
+    	   return (GMessage p) -> new Observable[]{p.messageTypeProperty(), p.messageTextProperty(), p.messageTimeProperty(), p.movieTimeProperty(), p.groupNameProperty(),p.uNameProperty(), p.uName2Property()};
     	   // http://www.javacodegeeks.com/2014/11/properties-extractor-best-way-to-get-the-listview-instantly-updating-its-elements.html	
     }
+ 
+    public String getInterpretText(){
+    	if(messageTypeProperty().getValue()=="Download"){
+    		return getUname()  + "asked to download from you.";
+    	}else if(messageTypeProperty().getValue()=="Sync"){
+    		return getUname() + " " + getMessageText() + ".";
+    	}else if(messageTypeProperty().getValue()=="Chat"){
+    		return getUname() + ":" + getMessageText();
+    	}else if(messageTypeProperty().getValue()=="Status"){
+    		return getUname() + " " + getMessageText() + ".";
+    	}else {
+			return "";
+		}
+    }
+    
+    
+    public String encode() throws EncodeException {
+    	
+  
+        String jsonString = Json.createObjectBuilder()
+            .add( "uname", getUname() )
+            .add( "message_text", getMessageText() )
+            .add( "message_time", getMessageTime())
+            .add( "message_type", getMessageType())
+            .add( "groupname", getGroupName())
+            .add( "movie_time",getMovieTime())
+            .add( "uname2", getUname2())
+            .build()
+            .toString();
+        	return jsonString;
+    
+    }
+    
 }

@@ -1,29 +1,32 @@
 package websocket;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonReaderFactory;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.DeploymentException;
+import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
+import tcp.ProgressBarSyn;
 import model.GMessage;
-import model.User;
-
-import org.glassfish.tyrus.client.ClientManager;
-
 import config.Profile;
  
 @ClientEndpoint
@@ -33,6 +36,7 @@ public class ChatClientEndpoint {
 
     static ObservableList<GMessage> observableList3 = FXCollections.observableArrayList();
    
+    private static JsonReaderFactory factory = Json.createReaderFactory( Collections.< String, Object >emptyMap() );
     
     public static void createChatClientEndpoint(ObservableList<GMessage> observableList){
 		observableList3 = observableList;
@@ -66,70 +70,91 @@ public class ChatClientEndpoint {
     
 	@OnOpen
     public void onOpen(Session session) {
+		GMessage gMessage = new GMessage("Status", "Entered", "", "", Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName());
 		System.out.println("Connected ... " + session.getId());
         try {
-            session.getBasicRemote().sendText("start");
+            session.getBasicRemote().sendText(gMessage.encode());
             Platform.runLater(new Runnable(){
     			@Override
     			public void run() {
-    				 
-    			     observableList3.add(new GMessage("Connected","00:00:00" ,"2015-1-3",Profile.currentUser.getUname(),Profile.currentGroup.getGroupName()));
+    			     observableList3.add(new GMessage(
+    			    		 "Status",
+    			    		 "Enter",
+    			    		 "",
+    			    		 "",
+    			    		 Profile.currentUser.getUname(),
+    			    		 "",
+    			    		 Profile.currentGroup.getGroupName()
+    			    		 ));
     				 
     			}
     			
     		});
-        } catch (IOException e) {
+        } catch (IOException | EncodeException e) {
             throw new RuntimeException(e);
         }
     }
  
     @OnMessage
     public static void onMessage(String message) {
-        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        
         System.out.println("Received ...." + message);
-        Platform.runLater(new Runnable(){
-			@Override
-			public void run() {
-				
-				observableList3.add(new GMessage("Received ...." + message,"00:00:01" ,"2015-1-3","cate" ,"group0"));
-			}
-        });
+        
+        try( final JsonReader reader = factory.createReader( new StringReader( message ) ) ) {
+            final JsonObject json = reader.readObject();
+            String uname = json.getString( "uname" );
+            String uname2 = json.getString( "uname2" );
+            String message_type= json.getString( "message_type" );
+            String groupname= json.getString( "groupname" );
+            String movie_time= json.getString( "movie_type" );
+            String message_time= json.getString( "message_type" );
+            String message_text= json.getString( "message_text" );
+            GMessage gMessage = new GMessage(message_type, message_text, movie_time, message_time, uname, uname2, groupname);
+            Platform.runLater(new Runnable(){
+    			@Override
+    			public void run() {
+    				
+    				if(message_type.equals("Download")){
+    					// Download....
+    				}
+    				
+    				if(groupname.equals(Profile.currentGroup)){
+    					if(message_type.equals("Sync")){
+	    					ProgressBarSyn.receiveGMessage(gMessage);
+	    				}
+	    				observableList3.add(gMessage);
+    				}
+    			}
+            });
+            
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+        
+
     }
  
  
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
         System.out.println(String.format("Session %s close because of %s", session.getId(), closeReason));
-        Platform.runLater(new Runnable(){
-			@Override
-			public void run() {
-				observableList3.add(new GMessage("Session" + session.getId() + "close because of" + closeReason,"00:00:01" ,"2015-1-3","cate","group0"));
-			}
-        });
     }
  
-    public static void main(String[] args) {
-    	ObservableList<GMessage> observableList = FXCollections.observableArrayList();
-    	ChatClientEndpoint.createChatClientEndpoint(observableList);
-    	System.out.println(observableList.size());
-    	ChatClientEndpoint.sendGMessage("helo");
-    	System.out.println(observableList.size());
-    	ChatClientEndpoint.sendGMessage("heloo2");
-    	System.out.println(observableList.size());
-    }
 
-	public static void sendGMessage(String message) {
-		System.out.println("Sending ...." + message);
-		try {
-			session.getBasicRemote().sendText(message);
+	public static void sendGMessage(GMessage gMessage) {
+		System.out.println("sendGMessage");
+		
+		try{
+			session.getBasicRemote().sendText(gMessage.encode());
+			System.out.println("Sending ...." + gMessage.encode());
 			Platform.runLater(new Runnable(){
 				@Override
 				public void run() {
-					observableList3.add(new GMessage("Sending ...." + message,"00:00:01" ,"2015-1-3",Profile.currentUser.getUname(),"group0"));
+					observableList3.add(gMessage);
 				}
 				
 			});
-		} catch (IOException e) {
+		} catch (EncodeException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

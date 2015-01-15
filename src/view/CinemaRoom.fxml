@@ -8,10 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CurrentMovieController" stylesheets="@Cinema.css">
+<Pane stylesheets="@Cinema.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CurrentMovieController">
    <children>
-      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;" >
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;">
          <children>
             <VBox>
                <children>
@@ -27,7 +26,7 @@
                      </children>
                   </HBox>
                   <Region prefHeight="8.0" prefWidth="277.0" />
-                  <ListView fx:id="GMessageListView" prefHeight="655.0" prefWidth="277.0" />
+                  <ListView id="GMessageListView" fx:id="GMessageListView" prefHeight="655.0" prefWidth="277.0" />
                </children>
             </VBox>
             <Region prefHeight="724.0" prefWidth="10.0" />
@@ -38,7 +37,7 @@
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
-                  <Slider fx:id="timeSlider" layoutX="64.0" layoutY="533.0" prefHeight="15.0" prefWidth="904.0" />
+                  <Slider fx:id="timeSlider" layoutX="30.0" layoutY="533.0" prefHeight="15.0" prefWidth="841.0" />
                   <Button id="volumeButton" fx:id="soundButton" layoutX="16.0" layoutY="556.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="31.0" />
                   <Slider fx:id="volumeSlider" layoutX="64.0" layoutY="566.0" prefHeight="15.0" prefWidth="196.0" />
                   <TextField fx:id="messageTextField" layoutX="264.0" layoutY="560.0" prefHeight="28.0" prefWidth="629.0" />
@@ -48,8 +47,8 @@
                      </effect>
                   </Button>
                   <MediaView fx:id="mediaView" fitHeight="420.0" fitWidth="980.0" layoutY="70.0" />
-                  <Button id="playButton" fx:id="playButton" layoutX="16.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="42.0"  />
-                  <ListView fx:id="UListView" layoutX="27.0" layoutY="610.0" orientation="HORIZONTAL" prefHeight="80.0" prefWidth="934.0" styleClass="groupScene"  />
+                  <Button id="playButton" fx:id="playButton" layoutX="873.0" layoutY="517.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="91.0" />
+                  <ListView fx:id="UListView" layoutX="27.0" layoutY="610.0" orientation="HORIZONTAL" prefHeight="80.0" prefWidth="934.0" styleClass="groupScene" />
                </children>
             </Pane>
          </children>

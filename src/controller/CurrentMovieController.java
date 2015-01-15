@@ -2,12 +2,14 @@ package controller;
 
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.Timer;
 
-import config.Profile;
+import javax.websocket.Endpoint;
+
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -26,7 +28,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -45,6 +46,7 @@ import model.User;
 import tcp.ProgressBarSyn;
 import view.UCell;
 import websocket.ChatClientEndpoint;
+import config.Profile;
 
 public class CurrentMovieController implements Initializable{
 	
@@ -61,7 +63,7 @@ public class CurrentMovieController implements Initializable{
 	@FXML
 	Slider volumeSlider;	
 	@FXML
-	Button playButton;
+	public Button playButton;
 	@FXML
 	Button soundButton;
 	@FXML
@@ -81,10 +83,14 @@ public class CurrentMovieController implements Initializable{
 	ObservableList<User> observableList2 = FXCollections.observableArrayList(); // user list
 	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // group message list
 
-
-
+	public MediaPlayer mediaPlayer = null;
 	
 	Timer groupMessageTimer = null;
+	double lastProgress = 0;
+	
+	Image imagePause = new Image(getClass().getResourceAsStream("../resources/pause2.png"));
+	Image imagePlay = new Image(getClass().getResourceAsStream("../resources/play.png"));
+
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -99,7 +105,7 @@ public class CurrentMovieController implements Initializable{
 
 					@Override
 					protected Void call() throws Exception {
-						ChatClientEndpoint.sendGMessage(messageTextField.getText());
+						ChatClientEndpoint.sendGMessage(new GMessage("Chat", messageTextField.getText(),"" ,new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),Profile.currentUser.getUname(),"","group0"));
 						Platform.runLater(new Runnable() {
 							@Override
 							public void run() {
@@ -127,7 +133,7 @@ public class CurrentMovieController implements Initializable{
 
 						@Override
 						protected Void call() throws Exception {
-							ChatClientEndpoint.sendGMessage(messageTextField.getText());
+							ChatClientEndpoint.sendGMessage(new GMessage("Chat", messageTextField.getText(),"" ,new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),Profile.currentUser.getUname(),"","group0"));
 							Platform.runLater(new Runnable() {
 								
 								@Override
@@ -151,28 +157,27 @@ public class CurrentMovieController implements Initializable{
 	
 		System.out.println("filename" + currentMovie.getMovieFileNameString());
 		Media mv = new Media(new File("resources/video/"+currentMovie.getMovieFileNameString()+".mp4").toURI().toString());
-		MediaPlayer mp = new MediaPlayer(mv);
-		mp.setAutoPlay(false);
+		mediaPlayer = new MediaPlayer(mv);
+		mediaPlayer.setAutoPlay(false);
 		movieTitleLabel.setText(currentMovie.getMovieNameString());
         volumeSlider.setValue(80);
-        mp.setVolume(0.8);
-		mediaView.setMediaPlayer(mp);
-
-		ProgressBarSyn progressBarSyn = new ProgressBarSyn();
-		progressBarSyn.setMediaPlayer(mp);
+        mediaPlayer.setVolume(0.8);
+		mediaView.setMediaPlayer(mediaPlayer);
+		ProgressBarSyn.beginProgressSyn(this);
 		
-		mp.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+		
+		mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Duration> observable,
 					Duration oldValue, Duration newValue) {
-				 double currentTime = mp.getCurrentTime().toSeconds();
-		          Duration duration = mp.getTotalDuration();
-		          if((-newValue.toSeconds()+mp.getTotalDuration().toSeconds())<1){
-		      		  mp.pause();
-		      		  mp.seek(mp.getStartTime());
+				 double currentTime = mediaPlayer.getCurrentTime().toSeconds();
+		          Duration duration = mediaPlayer.getTotalDuration();
+		          if((-newValue.toSeconds()+mediaPlayer.getTotalDuration().toSeconds())<1){
+		      		  mediaPlayer.pause();
+		      		  mediaPlayer.seek(mediaPlayer.getStartTime());
 		      		  timeSlider.setValue(0);
-		      		  mp.play();		      		
+		      		  mediaPlayer.play();		      		
 		      	  }
 		      		
 		          if(duration == Duration.UNKNOWN)
@@ -195,34 +200,27 @@ public class CurrentMovieController implements Initializable{
 			}
             });
 		
-		mp.volumeProperty().addListener(new ChangeListener() {
+		mediaPlayer.volumeProperty().addListener(new ChangeListener() {
 			@Override
 			public void changed(ObservableValue observable, Object oldValue,
 					Object newValue) {
 				  
-		          volumeSlider.setValue(mp.getVolume()*100.0);
+		          volumeSlider.setValue(mediaPlayer.getVolume()*100.0);
 			}
             });
-		
-		Image imagePause = new Image(getClass().getResourceAsStream("../resources/pause2.png"));
-		Image imagePlay = new Image(getClass().getResourceAsStream("../resources/play.png"));
 		
 		
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	System.out.println("You pressed Pause Button.");
             	if(playButton.getText().equals("Pause")){
 	                System.out.println("You pressed Pause Button.");
-	                playButton.setGraphic(new ImageView(imagePlay));	  
-	                playButton.setText("Play");
-	                mp.pause();
+	                setPause();
+	                ProgressBarSyn.sendPlaying(false);
             	}else{
-            		
 	                System.out.println("You pressed Play Button.");
-	                playButton.setText("Pause");
-	                playButton.setGraphic(new ImageView(imagePause));
-	                mp.play();           		
+	                setPlay();   
+	                ProgressBarSyn.sendPlaying(true);
             	}
             }
         });
@@ -242,7 +240,8 @@ public class CurrentMovieController implements Initializable{
             @Override
             public void handle(ActionEvent event) {
             	centerStackPane.getChildren().remove(centerStackPane.getChildren().size()-1);
-            	mp.volumeProperty().setValue(0);
+            	mediaPlayer.volumeProperty().setValue(0);
+            	ProgressBarSyn.stopProgressSyn();
         		ChatClientEndpoint.closeChatClientEndpoint();
             }
         });
@@ -252,14 +251,18 @@ public class CurrentMovieController implements Initializable{
                     Boolean changing) {
 
                 if (changing) {
-                	System.out.println("Start:"+timeSlider.getValue());
-                } else {
-                	System.out.println("Finish:"+timeSlider.getValue());
-                	Duration duration = mp.getMedia().getDuration();
-            
-                	mp.seek(duration.multiply(timeSlider.getValue() / 100.0));
+                	lastProgress = timeSlider.getValue();
+                	System.out.println("Start:"+lastProgress);
                 	
-                	progressBarSyn.sendProgress(timeSlider.getValue());
+                } else {
+                	double currentProgress = timeSlider.getValue();
+                	System.out.println("End:"+currentProgress);
+                	if(currentProgress>lastProgress)
+                		ProgressBarSyn.sendProgress("Forwarded", timeSlider.getValue());
+                	else if(currentProgress<lastProgress)
+                		ProgressBarSyn.sendProgress("Rewinded", timeSlider.getValue());
+                	
+                	setProgress(currentProgress);  	
                 }
             }
         });
@@ -267,7 +270,7 @@ public class CurrentMovieController implements Initializable{
 		volumeSlider.valueProperty().addListener(new InvalidationListener() {
 		    public void invalidated(Observable ov) {
 		       if(volumeSlider.isValueChanging()){
-		    	   mp.setVolume(volumeSlider.getValue()/100.0);
+		    	   mediaPlayer.setVolume(volumeSlider.getValue()/100.0);
 		       }
 		    }
 		});
@@ -326,29 +329,56 @@ public class CurrentMovieController implements Initializable{
 			
 		    super.updateItem(gMessage,empty);
 		    if(!empty && (gMessage != null)) {
-		    	System.out.println("Observable list size"+ observableList3.size()+gMessage.getMessage());
-		        GMData data = new GMData();
+		    	//System.out.println("Observable list size"+ observableList3.size()+gMessage.getInterpretText());
 		        Platform.runLater(new Runnable(){
 					@Override
 					public void run() {
-						data.setImage(Profile.userMap.get(gMessage.getUname()).getSmallImage());
-				        data.setInfo(gMessage.getMessage());
-				        setGraphic(data.getBox());
-				       
+						 setText(gMessage.getInterpretText());
 					}
-		        	
 		        });
 
 		    }else{
 		    	Platform.runLater(new Runnable(){
-		    		@Override
-					public void run() {
-						setGraphic(null);
-					}
+						@Override
+						public void run() {
+							setText(null);
+						}
 		    	});
+
 		    }
 		}
 
+	}
+
+	public void setPlay() {
+        Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				 playButton.setGraphic(new ImageView(imagePause));
+				 playButton.setText("Pause");
+				 mediaPlayer.play();
+			}
+		});
+		
+	}
+
+
+	public void setPause() {
+        Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				 playButton.setGraphic(new ImageView(imagePlay));	 
+				 playButton.setText("Play");
+				 mediaPlayer.pause();
+			}
+		});
+		
+	}
+	
+	public void setProgress(double progress){
+		Duration duration = mediaPlayer.getMedia().getDuration();
+		mediaPlayer.seek(duration.multiply(progress / 100.0));
+		
 	}
 	
    
