@@ -9,6 +9,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import config.Interface;
 import config.Profile;
 import controller.LoginController;
 
@@ -21,9 +22,9 @@ public class MainApp extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-			Profile.primaryStage = primaryStage;
-			Profile.primaryStage.setTitle("OnlineCinemaApp");
-	        initRootLayout();
+		Interface.primaryStage = primaryStage;
+		Interface.primaryStage.setTitle("OnlineCinemaApp");
+	    initRootLayout();
 	       
 	}
 	private void initRootLayout() {
@@ -40,8 +41,8 @@ public class MainApp extends Application {
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
-            Profile.primaryStage.setScene(scene);
-            Profile.primaryStage.show();
+            Interface.primaryStage.setScene(scene);
+            Interface.primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

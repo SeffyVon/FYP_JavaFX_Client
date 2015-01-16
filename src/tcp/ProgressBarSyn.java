@@ -23,9 +23,9 @@ public class ProgressBarSyn {
 		System.out.println("send Playing");
 		 if(currentMovieController!=null){
 			if(isPlaying)
-				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "Played", "", "", Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName()));
+				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "Played", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
 			else {
-				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "Paused", "", "", Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName()));
+				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "Paused", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
 			}
 		 }
 	}
@@ -46,7 +46,7 @@ public class ProgressBarSyn {
 		
 		System.out.println("send Progress");
 		if(currentMovieController!=null){
-			ChatClientEndpoint.sendGMessage(new GMessage("Sync", playBackMessage, String.valueOf(progress0), "", Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName()));
+			ChatClientEndpoint.sendGMessage(new GMessage("Sync", playBackMessage, String.valueOf(progress0), Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName()));
 			}
 	}
 	

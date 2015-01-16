@@ -18,11 +18,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import model.User;
 import tcp.UserRequest;
 import config.Config;
 import config.Profile;
+import config.Interface;
 
 public class LoginController implements Initializable{
 	
@@ -62,7 +62,7 @@ public class LoginController implements Initializable{
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
-	            Profile.primaryStage.getScene().setCursor(Cursor.WAIT);
+	            Interface.primaryStage.getScene().setCursor(Cursor.WAIT);
 	            System.out.println("You pressed login Button.");
 	            String uname = unameField.getText();
 	            String pword = pwordField.getText();
@@ -78,17 +78,17 @@ public class LoginController implements Initializable{
 						cinemaController.prepareGroups();
 						cinemaController.setUser();
 						cinemaController.setGListView();
-						Profile.primaryStage.setResizable(false);
-						Profile.primaryStage.setX(0);
-						Profile.primaryStage.setY(0);
-						Profile.primaryStage.setWidth(1280);
-						Profile.primaryStage.setHeight(724);
-						Profile.primaryStage.getScene().setCursor(Cursor.DEFAULT);
-						cinemaController.setThisStage(Profile.primaryStage);
+						Interface.primaryStage.setResizable(false);
+						Interface.primaryStage.setX(0);
+						Interface.primaryStage.setY(0);
+						Interface.primaryStage.setWidth(1280);
+						Interface.primaryStage.setHeight(724);
+						Interface.primaryStage.getScene().setCursor(Cursor.DEFAULT);
+						cinemaController.setThisStage(Interface.primaryStage);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					Profile.primaryStage.setScene(new Scene(GLayout));
+					Interface.primaryStage.setScene(new Scene(GLayout));
 	            	
 	            }else{
 	            	wrongLabel.setVisible(true);

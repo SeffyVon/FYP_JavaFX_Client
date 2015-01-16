@@ -3,18 +3,10 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -30,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,7 +32,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import model.GMessage;
 import model.Group;
 import model.Movie;
 import model.User;
@@ -50,11 +40,10 @@ import org.controlsfx.dialog.Dialogs;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import tcp.FileReceiver;
 import tcp.GroupRequest;
 import view.GCell;
 import view.UCell;
-import config.Config;
+import config.Interface;
 import config.Profile;
 
 public class CinemaController implements Initializable {
@@ -94,8 +83,7 @@ public class CinemaController implements Initializable {
 	ListView GListView;
 	@FXML
 	TextArea movieBriefTextArea;
-	@FXML
-	ProgressBar networkProgressBar;
+
 	@FXML
 	StackPane centerStackPane;
 	@FXML
@@ -120,18 +108,13 @@ public class CinemaController implements Initializable {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		networkProgressBar.setVisible(false);
+		
+		Interface.cinemaController = this;
+
 		
 		watchButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
-	        	
-	        	if(watchButton.getText()=="DOWNLOAD"){
-	        		System.out.println("you press DOWNLOAD");
-	        		receiveFromUser();
-	        		return;
-	        	}
-	        	System.out.println("you press WATCH");
 	        	
 	        	Platform.runLater(new Runnable(){
 
@@ -144,7 +127,6 @@ public class CinemaController implements Initializable {
 			    	        CurrentMovieController currentMovieController = fxmlLoader.getController();
 			    	        if(currentMovie == null)
 			    	        	return;
-			    	        currentMovieController.setCenterStackPane(centerStackPane);
 			    	        currentMovieController.setMovieMediaPane(currentMovie);
 			    	       } catch (IOException e) {
 			    	        throw new RuntimeException(e);
@@ -325,29 +307,10 @@ public class CinemaController implements Initializable {
 			
 			setLabelVisibility(true);
 			
-			Path path = Paths.get("resources/video/"+currentMovie.getMovieFileNameString()+".mp4");
-			if (!Files.exists(path)) {
-				watchButton.setText("DOWNLOAD");
-			}else{
-				watchButton.setText("WATCH");
-			}
+			
 		}
 	}
 	
-	void receiveFromUser(){
-		FileReceiver fileReceiver = new FileReceiver();
-		System.out.println("receive from ip" + Config.macAddrString);
-		Platform.runLater(new Runnable(){
-
-			@Override
-			public void run() {
-				networkProgressBar.setVisible(true);
-			}
-			
-		});
-		fileReceiver.receiveFromIP(currentMovie.getMovieOwnerIPString(), currentMovie.getMovieFileNameString(), networkProgressBar, currentMovie.getPort(),currentMovie.getFilesize());
-		
-	}
 	@SuppressWarnings("unchecked")
 	void setGListView(){
 		

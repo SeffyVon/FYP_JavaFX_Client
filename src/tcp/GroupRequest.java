@@ -19,7 +19,20 @@ import config.Config;
 
 public class GroupRequest {
 	
-
+	public static JSONObject getOnlineGroupMems(String groupname){
+		try {
+			HttpResponse<JsonNode> responseString = Unirest.post(Config.hostAddrString + "groups/getOnlineGroupMems.php")
+			  .field("groupname",groupname)
+			  .asJson();
+			System.out.println(responseString.getBody().toString());
+			return responseString.getBody().getObject();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+		
+	}
 	
 
 	
@@ -42,7 +55,7 @@ public class GroupRequest {
 	
 	public static void main(String[] args) {
 //		//System.out.println(getGroupsAndMovies("doge"));
-		System.out.println(new GroupRequest().getGroupMems("doge"));
+		new GroupRequest().getOnlineGroupMems("group0");
 //		JSONObject jsonObject= getGroupMems("doge");
 //		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 //		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){

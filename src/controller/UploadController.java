@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import config.Interface;
 import config.Profile;
 
 public class UploadController implements Initializable{
@@ -66,7 +67,12 @@ public class UploadController implements Initializable{
 						
 						@Override
 						public void run() {
-							File selectedFile = fileChooser.showOpenDialog(Profile.primaryStage);
+							File selectedFile = fileChooser.showOpenDialog(Interface.primaryStage);
+						
+							// encrypt it here .....
+							
+							// move it to the place ....
+						
 						}
 					});
 	        	 
@@ -84,7 +90,7 @@ public class UploadController implements Initializable{
 					
 					@Override
 					public void run() {
-						File selectedFile = fileChooser.showOpenDialog(Profile.primaryStage);
+						File selectedFile = fileChooser.showOpenDialog(Interface.primaryStage);
 					}
 				});
 	        	

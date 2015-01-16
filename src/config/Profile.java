@@ -16,5 +16,5 @@ public class Profile {
 	public static Set<String> gStringSet = new HashSet<String>();
 	public static Set<String> uStringSet = new HashSet<String>();
 	public static String privateKeyString = "";
-	public static Stage primaryStage;
+
 }

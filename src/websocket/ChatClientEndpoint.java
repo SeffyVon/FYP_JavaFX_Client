@@ -11,6 +11,7 @@ import java.util.Date;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ProgressBar;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -25,13 +26,16 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
+import tcp.FileReceiver;
+import tcp.FileSender;
 import tcp.ProgressBarSyn;
 import model.GMessage;
+import config.Interface;
 import config.Profile;
  
 @ClientEndpoint
 public class ChatClientEndpoint {
- 
+	static int portNum = 15132;
     static Session session=null;
 
     static ObservableList<GMessage> observableList3 = FXCollections.observableArrayList();
@@ -70,7 +74,7 @@ public class ChatClientEndpoint {
     
 	@OnOpen
     public void onOpen(Session session) {
-		GMessage gMessage = new GMessage("Status", "Entered", "", "", Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName());
+		GMessage gMessage = new GMessage("Status", "Entered", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName());
 		System.out.println("Connected ... " + session.getId());
         try {
             session.getBasicRemote().sendText(gMessage.encode());
@@ -83,7 +87,6 @@ public class ChatClientEndpoint {
     			    		 "",
     			    		 "",
     			    		 Profile.currentUser.getUname(),
-    			    		 "",
     			    		 Profile.currentGroup.getGroupName()
     			    		 ));
     				 
@@ -103,27 +106,40 @@ public class ChatClientEndpoint {
         try( final JsonReader reader = factory.createReader( new StringReader( message ) ) ) {
             final JsonObject json = reader.readObject();
             String uname = json.getString( "uname" );
-            String uname2 = json.getString( "uname2" );
             String message_type= json.getString( "message_type" );
             String groupname= json.getString( "groupname" );
-            String movie_time= json.getString( "movie_type" );
-            String message_time= json.getString( "message_type" );
+            String movie_time= json.getString( "movie_time" );
+            String message_time= json.getString( "message_time" );
             String message_text= json.getString( "message_text" );
-            GMessage gMessage = new GMessage(message_type, message_text, movie_time, message_time, uname, uname2, groupname);
+            GMessage gMessage = new GMessage(message_type, message_text, movie_time, message_time, uname, groupname);
             Platform.runLater(new Runnable(){
     			@Override
     			public void run() {
-    				
-    				if(message_type.equals("Download")){
-    					// Download....
-    				}
-    				
     				if(groupname.equals(Profile.currentGroup)){
     					if(message_type.equals("Sync")){
 	    					ProgressBarSyn.receiveGMessage(gMessage);
 	    				}
 	    				observableList3.add(gMessage);
     				}
+    				
+    				else if(message_type.equals("Download_Req") && message_text.equals(Profile.currentUser.getUname())){
+    					// Download Prompt.... 
+    					// if yes
+    					new FileSender(Profile.groupMap.get(groupname).getMovie().getMovieFileNameString(), portNum++).run();
+    					ChatClientEndpoint.sendGMessage(new GMessage("Download_Ack", uname, "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+    					// if no
+    				}
+    				
+    				else if(message_type.equals("Download_Ack") && message_text.equals(Profile.currentUser.getUname())){
+    					
+    					FileReceiver.receiveFromIP(
+    							Profile.currentGroup.getMovie().getMovieOwnerIPString(),
+    							Profile.currentGroup.getMovie().getMovieNameString(),
+    							Interface.currentMovieController.networkProgressBar,
+    							portNum++,
+    							Profile.currentGroup.getMovie().getFilesize()+1);// Start Receive ....
+    				}
+    				
     			}
             });
             

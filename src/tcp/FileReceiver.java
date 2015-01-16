@@ -14,19 +14,21 @@ import javafx.scene.control.ProgressBar;
 
 public class FileReceiver {
 	
-	public boolean receiveFromIP(String ipAddr, String movieFileName, ProgressBar networkProgressBar, int port,int filesize ){
+	public static boolean receiveFromIP(String ipAddr, String movieFileName, ProgressBar networkProgressBar, int port,int filesize ){
 
 		Task<Void> task = new Task<Void>() {	
 			@Override
 			protected Void call() throws Exception {
+				Platform.runLater(new Runnable(){
+					@Override
+					public void run() {
+	    				networkProgressBar.setVisible(true);
+					}
+				});
 				
-				System.out.println("Task2 ");
-				updateProgress(2,10);
-				System.out.println("Task3");
-				;
+				updateProgress(0,10);	
         	    int bytesRead;
         	    int currentTot = 0;
-        	    System.out.println("Task4");
     		    byte [] bytearray  = new byte [filesize+1];
     		    InputStream is = null;
     		    Socket socket = null;
@@ -40,13 +42,18 @@ public class FileReceiver {
         		    is = socket.getInputStream();
         		}
         		catch(Exception e){
-        			networkProgressBar.setVisible(false);
+        		    Platform.runLater(new Runnable(){
+    					@Override
+    					public void run() {
+    	    				networkProgressBar.setVisible(false);
+    					}
+    				});
         			return null;
         		}
         		try{
         		    FileOutputStream fos;
         		    
-        		    updateProgress(4,10);
+        		    updateProgress(0,10);
     				
         			fos = new FileOutputStream("resources/video/"+movieFileName+".mp4");
         		    BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -69,12 +76,10 @@ public class FileReceiver {
         		    
 
         		    Platform.runLater(new Runnable(){
-
     					@Override
     					public void run() {
     	    				networkProgressBar.setVisible(false);
     					}
-    					
     				});
         		    
         		    bos.write(bytearray, 0 , currentTot);
@@ -95,15 +100,10 @@ public class FileReceiver {
 		networkProgressBar.progressProperty().bind(task.progressProperty());
 		new Thread(task).start();
 		
-	            	
-//				}
-//			}
-//				);
-
 		return true;
 	}
 	
-	public boolean receiveFromIP_2(String ipAddr, String movieFileName){
+	static public boolean receiveFromIP_2(String ipAddr, String movieFileName){
 
 //		Task<Void> task = new Task<Void>() {	
 //			@Override

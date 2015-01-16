@@ -15,12 +15,11 @@ public class GMessage {
 	private StringProperty movie_time;
 	private StringProperty message_time;
 	private StringProperty uname;
-	private StringProperty uname2;
 	private StringProperty groupname;
 	
-	public GMessage(String message_type, String message_text, String movie_time, String message_time, String uname, String uname2, String groupname) {
+	public GMessage(String message_type, String message_text, String movie_time, String message_time, String uname, String groupname) {
 		uNameProperty().set(uname);
-		uName2Property().set(uname2);
+
 		groupNameProperty().set(groupname);
 		movieTimeProperty().set(movie_time);
 		messageTimeProperty().set(message_time);
@@ -49,10 +48,7 @@ public class GMessage {
 		return movieTimeProperty().getValue();
 	}
     
-    public String getUname2(){
-    	return uName2Property().getValue();
-    }
-    
+
     public String getGroupName(){
     	return groupNameProperty().getValue();
     }
@@ -91,14 +87,7 @@ public class GMessage {
     	}
         return uname;
     }
-    
-    public StringProperty uName2Property(){
-    	if(uname2==null){
-    		uname2 = new SimpleStringProperty();
-    	}
-        return uname2;
-    }
-    
+
     public StringProperty groupNameProperty(){
     	if(groupname==null){
     		groupname = new SimpleStringProperty();
@@ -109,20 +98,22 @@ public class GMessage {
 
     
     public static Callback<GMessage, Observable[]> extractor() {
-    	   return (GMessage p) -> new Observable[]{p.messageTypeProperty(), p.messageTextProperty(), p.messageTimeProperty(), p.movieTimeProperty(), p.groupNameProperty(),p.uNameProperty(), p.uName2Property()};
+    	   return (GMessage p) -> new Observable[]{p.messageTypeProperty(), p.messageTextProperty(), p.messageTimeProperty(), p.movieTimeProperty(), p.groupNameProperty(),p.uNameProperty()};
     	   // http://www.javacodegeeks.com/2014/11/properties-extractor-best-way-to-get-the-listview-instantly-updating-its-elements.html	
     }
  
     public String getInterpretText(){
-    	if(messageTypeProperty().getValue()=="Download"){
-    		return getUname()  + "asked to download from you.";
-    	}else if(messageTypeProperty().getValue()=="Sync"){
+    	if(messageTypeProperty().getValue()=="Sync"){
     		return getUname() + " " + getMessageText() + ".";
     	}else if(messageTypeProperty().getValue()=="Chat"){
     		return getUname() + ":" + getMessageText();
     	}else if(messageTypeProperty().getValue()=="Status"){
     		return getUname() + " " + getMessageText() + ".";
-    	}else {
+    	}else if(messageTypeProperty().getValue()=="Download_Req"){
+    		return getUname()  + "asked to download from you.";
+    	}else if(messageTypeProperty().getValue()=="Download_Ack"){
+    		return getUname() + "agreed to let you download. Start downloading...";
+    	}else{
 			return "";
 		}
     }
@@ -138,7 +129,6 @@ public class GMessage {
             .add( "message_type", getMessageType())
             .add( "groupname", getGroupName())
             .add( "movie_time",getMovieTime())
-            .add( "uname2", getUname2())
             .build()
             .toString();
         	return jsonString;

@@ -44,7 +44,6 @@
                                           <InnerShadow />
                                        </effect>
                                     </Button>
-                                    <ProgressBar fx:id="networkProgressBar" layoutX="153.0" layoutY="314.0" prefHeight="28.0" prefWidth="156.0" progress="0.0" />
                                  </children>
                               </Pane>
                            </center>

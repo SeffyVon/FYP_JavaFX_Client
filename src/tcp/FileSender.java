@@ -9,29 +9,32 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Observable;
+
+import model.GMessage;
+import javafx.collections.ObservableList;
 
 public class FileSender extends Thread {
 	String filenameString;
+	boolean isOcuppied = false;
+	int portNum;
+
 	
-	FileSender(String filenameString){
+	public FileSender(String filenameString, int portNum){
 		this.filenameString = filenameString;
+		isOcuppied = true;
+		this.portNum = portNum;
 	}
-	
 	
 	 @Override
 	 public void run() {
 		 ServerSocket serverSocket;
 		try {
-			serverSocket = new ServerSocket(15123);
+			serverSocket = new ServerSocket(portNum);
 			
-			while(true){
+			while(isOcuppied){
 				Socket socket = serverSocket.accept(); 
 				System.out.println("Accepted connection : " + socket); 
-//				BufferedReader in = new BufferedReader( 
-//						new InputStreamReader( socket.getInputStream())); 
-//				String movieFileName = in.readLine();
-//				System.out.println("get movie File Name"+movieFileName);
-				String movieFileName = "harrypotter";
 				File transferFile = new File("resources/video/tosend/"+filenameString+".mp4"); // ("video/theAmazingSpiderMan.rmvb");//
 				byte [] bytearray = new byte [(int)transferFile.length()]; 
 				FileInputStream fin = new FileInputStream(transferFile); 
@@ -46,6 +49,10 @@ public class FileSender extends Thread {
 				long time2 = System.currentTimeMillis();
 				System.out.println("File transfer complete"); 
 				System.out.println("speed(KB/s):"+transferFile.length()/(time2-time1));
+				isOcuppied = false;
+				
+				// prompt...
+				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -57,7 +64,7 @@ public class FileSender extends Thread {
 	 public static void main (String [] args ) throws IOException {
 		
 		// new FileSender("harrypotter").run();
-		 new FileSender("thehobbits").run();
+		 //new FileSender("thehobbits").run();
 		
 	}
 
