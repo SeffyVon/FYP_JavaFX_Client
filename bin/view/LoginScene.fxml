@@ -7,11 +7,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="MovieTape" prefHeight="295.0" prefWidth="484.0" styleClass="cinemaPane" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<AnchorPane id="MovieTape" prefHeight="295.0" prefWidth="484.0" styleClass="cinemaPane" stylesheets="@Cinema.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
       <Pane>
          <children>
-            <Pane layoutX="19.0" prefHeight="295.0" prefWidth="441.0" styleClass="groupScene" stylesheets="@application.css">
+            <Pane layoutX="19.0" prefHeight="295.0" prefWidth="441.0" styleClass="groupScene" >
                <children>
                   <Label layoutX="95.0" layoutY="46.0" text="Welcome to Online Cinema!">
                      <font>

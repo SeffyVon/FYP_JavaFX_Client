@@ -16,16 +16,14 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import config.Config;
+import config.Profile;
 
 public class UserRequest {  // userLogin and userRegister
-	String hostAddrString;
-	public UserRequest() {
-	    hostAddrString = "http://"+Config.macAddrString+":63342/OnlineCinema_Server/src/";
-		System.out.println(hostAddrString);
-	}
+
+
 	public boolean userLogin(String uname, String hashOfPw, String ipAddr, boolean ipAddrUpdate){
 		try {
-			HttpResponse<String> responseString = Unirest.post(hostAddrString+"users/userLogin.php")
+			HttpResponse<String> responseString = Unirest.post(Config.hostAddrString+"users/userLogin.php")
 			  .field("uname",uname)
 			  .field("hashOfPw", hashOfPw)
 			  .field("ipAddr", ipAddr)
@@ -44,7 +42,7 @@ public class UserRequest {  // userLogin and userRegister
 	
 	public boolean userRegister(String uname, String hashOfPw){
 		try {
-			HttpResponse<String> responseJson = Unirest.post(hostAddrString+"users/userRegister.php")
+			HttpResponse<String> responseJson = Unirest.post(Config.hostAddrString+"users/userRegister.php")
 			  .field("uname",uname)
 			  .field("hashofpw", hashOfPw)
 			  .asString();
@@ -61,7 +59,7 @@ public class UserRequest {  // userLogin and userRegister
 	
 	public boolean userPicUpload(String uname, String picname){
 		try {
-			HttpResponse<String> responseJson = Unirest.post(hostAddrString+"/users/fileUpload.php")
+			HttpResponse<String> responseJson = Unirest.post(Config.hostAddrString+"/users/fileUpload.php")
 			  .field("uploadFile", new File(picname))
 			  .field("uname", uname)
 			  .asString();
@@ -78,7 +76,7 @@ public class UserRequest {  // userLogin and userRegister
 
 	public boolean userPicDownload(String uname){
 		try {
-			HttpResponse<InputStream> responseBinary = Unirest.post(hostAddrString+"users/fileDownload.php")
+			HttpResponse<InputStream> responseBinary = Unirest.post(Config.hostAddrString+"users/fileDownload.php")
 			  .field("uname", uname)
 			  .asBinary();
 	
@@ -103,7 +101,7 @@ public class UserRequest {  // userLogin and userRegister
 	
 	public String userPicUpdate(String uname, String pword){
 		try {
-			HttpResponse<String> responseJson = Unirest.post(hostAddrString+"users/picFileUpdate.php")
+			HttpResponse<String> responseJson = Unirest.post(Config.hostAddrString+"users/picFileUpdate.php")
 			  .field("uname", uname)
 			  .field("hashOfPw", pword)
 			  .asString();
@@ -118,21 +116,22 @@ public class UserRequest {  // userLogin and userRegister
 	
 	
 	public static void main(String[] args) {
+
+	
 		
-		
-		try {
-			Config.localAddrString = InetAddress.getLocalHost().getHostAddress();
-			if(System.getProperty("os.name").equals("Mac OS X")){
-				Config.macAddrString = Config.localAddrString;
-			}else{
-				Config.linuxAddrString = Config.localAddrString;
-			}
-			System.out.println("local IP addr:"+Config.macAddrString);
-			
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		try {
+//			Config.localAddrString = InetAddress.getLocalHost().getHostAddress();
+//			if(System.getProperty("os.name").equals("Mac OS X")){
+//				Config.macAddrString = Config.localAddrString;
+//			}else{
+//				Config.linuxAddrString = Config.localAddrString;
+//			}
+//			System.out.println("local IP addr:"+Config.macAddrString);
+////			
+//		} catch (UnknownHostException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		UserRequest userRequest= new UserRequest();
 		//System.out.println(userRequest.userLogin("doge","hello",Config.localAddrString));
 		//System.out.println(userRequest.userRegister("cate2","hello"));

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<Pane stylesheets="@Cinema.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CurrentMovieController">
+   <children>
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" style="-fx-background-color: black;">
+         <children>
+            <VBox>
+               <children>
+                  <Region prefHeight="8.0" prefWidth="277.0" />
+                  <HBox>
+                     <children>
+                        <Button fx:id="returnButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="23.0" styleClass="theme" text="&lt;" textFill="#f5eeee">
+                           <effect>
+                              <InnerShadow />
+                           </effect>
+                        </Button>
+                        <Label fx:id="groupName" alignment="CENTER" contentDisplay="CENTER" prefHeight="25.0" prefWidth="248.0" text="GROUPNAME" textAlignment="CENTER" textFill="#fcf5f5" />
+                     </children>
+                  </HBox>
+                  <Region prefHeight="8.0" prefWidth="277.0" />
+                  <ListView id="GMessageListView" fx:id="GMessageListView" prefHeight="655.0" prefWidth="277.0" />
+               </children>
+            </VBox>
+            <Region prefHeight="724.0" prefWidth="10.0" />
+            <Pane prefHeight="724.0" prefWidth="980.0">
+               <children>
+                  <Label fx:id="movieTitleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="14.0" prefHeight="40.0" prefWidth="980.0" text="TITLE" textAlignment="CENTER" textFill="#d3d1ce">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="timeSlider" layoutX="30.0" layoutY="533.0" prefHeight="15.0" prefWidth="841.0" />
+                  <Button id="volumeButton" fx:id="soundButton" layoutX="16.0" layoutY="556.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="31.0" />
+                  <Slider fx:id="volumeSlider" layoutX="64.0" layoutY="566.0" prefHeight="15.0" prefWidth="196.0" />
+                  <TextField fx:id="messageTextField" layoutX="264.0" layoutY="560.0" prefHeight="28.0" prefWidth="616.0" />
+                  <Button fx:id="sendButton" layoutX="883.0" layoutY="561.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="79.0" styleClass="theme" text="SEND" textFill="#f8f7f7">
+                     <effect>
+                        <InnerShadow />
+                     </effect>
+                  </Button>
+                  <MediaView fx:id="mediaView" fitHeight="420.0" fitWidth="980.0" layoutY="70.0" />
+                  <Button id="playButton" fx:id="playButton" layoutX="873.0" layoutY="517.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="91.0" text="Play" />
+                  <ListView fx:id="UListView" layoutX="27.0" layoutY="610.0" orientation="HORIZONTAL" prefHeight="80.0" prefWidth="554.0" styleClass="groupScene" />
+                  <Label fx:id="unavailableLabel" layoutX="610.0" layoutY="611.0" prefHeight="28.0" prefWidth="331.0" text="Choose a friend to download the movie from." textAlignment="CENTER" textFill="#f8f6f6" wrapText="true">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <ProgressBar fx:id="networkProgressBar" layoutX="724.0" layoutY="650.0" prefHeight="28.0" prefWidth="226.0" progress="0.0" />
+                  <Button fx:id="downloadButton" layoutX="607.0" layoutY="648.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="103.0" styleClass="theme" text="DOWNLOAD" textFill="WHITE">
+                     <effect>
+                        <InnerShadow />
+                     </effect>
+                  </Button>
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+   </children>
+</Pane>

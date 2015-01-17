@@ -1,74 +1,97 @@
 package tcp;
 
-import java.net.UnknownHostException;
-
 import javafx.application.Platform;
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import udp.UDPReceiver;
-import udp.UDPSender;
-import config.Config;
+import model.GMessage;
+import websocket.ChatClientEndpoint;
+import config.Profile;
+import controller.CurrentMovieController;
 
 
 public class ProgressBarSyn {
-	static double progress = 0;
-	
-	static UDPReceiver receiver = null;
-	static UDPSender sender = null;
 
-	static MediaPlayer mediaPlayer = null;
+
+	private static CurrentMovieController currentMovieController = null;
 
 	
-	public ProgressBarSyn(){
-		receiver = new UDPReceiver();
-		sender = new UDPSender();
+	public static void stopProgressSyn(){
+		currentMovieController = null;
+	}
+
+	public static void sendPlaying(boolean isPlaying){
+		System.out.println("send Playing");
+		 if(currentMovieController!=null){
+			if(isPlaying)
+				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "played", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+			else {
+				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "paused", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+			}
+		 }
 	}
 	
-	public void stopProgressSyn(){
-		receiver.stopReceiver();
-		sender = null;
-	}
-	
-	public void resumeProgressSyn(){
-		receiver.resumeReceiver();
-		sender = new UDPSender();
-	}
-	
-	static double getProgress(){
-		return progress;
-	}
-	
-	public static void sendProgress(double progress0){
-		
-		System.out.println("send Progress");
-		try {
-			sender.send(progress0);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+	public static void receiveGMessage(GMessage gMessage){
+		if(currentMovieController!=null){
+			if(gMessage.getMessageText().equals("played") ){
+				receivePlaying(gMessage.getUname(), true);
+			}else if(gMessage.getMessageText().equals("paused")){
+				receivePlaying(gMessage.getUname(), false);
+			}else if(gMessage.getMessageText().equals("forwarded") || gMessage.getMessageText().equals("rewinded")){
+				receiveProgress(gMessage.getUname(),Double.parseDouble(gMessage.getMovieTime())); // Correspondent to String.valueOf(progress0)
+			}
 		}
 	}
 	
-	public static void receiveProgress(String senderAddr, double progress0){
+	public static void sendProgress(String playBackMessage, double progress0){
 		
-		if(mediaPlayer != null & !senderAddr.equals(Config.localAddrString)){
+		System.out.println("send Progress");
+		if(currentMovieController!=null){
+			ChatClientEndpoint.sendGMessage(new GMessage("Sync", playBackMessage, String.valueOf(progress0), "",Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+			}
+	}
+	
+	public static void receiveProgress(String senderName, double progress0){
+		
+		if(currentMovieController != null & !senderName.equals(Profile.currentUser.getUname())){
 			Platform.runLater(new Runnable(){
 
 				@Override
 				public void run() {
 					System.out.println("server receive and set progress:"+progress0);
-					Duration duration = mediaPlayer.getMedia().getDuration();
-                	mediaPlayer.seek(duration.multiply(progress0 / 100.0));
-					
+					currentMovieController.setProgress(progress0);
+				}
+				
+			});
+		}
+	}
+	
+	public static void receivePlaying(String senderName, boolean isPlaying){
+		if(currentMovieController != null & !senderName.equals(Profile.currentUser.getUname())){
+			Platform.runLater(new Runnable(){
+
+				@Override
+				public void run() {
+					System.out.println("server receive and set playing:"+ isPlaying);
+					if(isPlaying){
+		                currentMovieController.setPlay();
+
+					}else{
+		                currentMovieController.setPause();
+					}
 				}
 				
 			});
 		}
 	}
 
-	public void setMediaPlayer(MediaPlayer mp) {
-		mediaPlayer = mp;
+	public static void beginProgressSyn(CurrentMovieController currentMovieController) {
+		
+		// receive from the system...
+		
+		ProgressBarSyn.currentMovieController = currentMovieController;
 		
 	}
+
 	
 
 }

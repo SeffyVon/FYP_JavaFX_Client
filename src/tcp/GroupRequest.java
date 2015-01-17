@@ -19,20 +19,28 @@ import config.Config;
 
 public class GroupRequest {
 	
-	String hostAddrString;
-	public GroupRequest() {
-	    hostAddrString = "http://127.0.0.1:63342/OnlineCinema_Server/src/";
-		//System.out.println(hostAddrString);
+	public static JSONObject getOnlineGroupMems(String groupname){
+		try {
+			HttpResponse<JsonNode> responseString = Unirest.post(Config.hostAddrString + "groups/getOnlineGroupMems.php")
+			  .field("groupname",groupname)
+			  .asJson();
+			System.out.println(responseString.getBody().toString());
+			return responseString.getBody().getObject();
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+		
 	}
 	
 
 	
 	public JSONObject getGroupMems(String uname){
 		try {
-			HttpResponse<JsonNode> responseString = Unirest.post(hostAddrString + "groups/getGroupMems.php")
+			HttpResponse<JsonNode> responseString = Unirest.post(Config.hostAddrString + "groups/getGroupMems.php")
 			  .field("uname",uname)
 			  .asJson();
-			//System.out.println(responseString.getBody());
 			if(!responseString.getBody().toString().equals("{}"))
 				return responseString.getBody().getObject();
 		} catch (UnirestException e) {
@@ -43,50 +51,11 @@ public class GroupRequest {
 		
 	}
 	
-	public ArrayList<GMessage> getGroupMessage(String groupname, String lasttime){
-		try {
-			HttpResponse<JsonNode> responseJson = Unirest.post(hostAddrString + "groups/groupMessage.php")
-			  .field("groupname", groupname)
-			  .field("lasttime", lasttime)
-			  .asJson();
-			
-	//		System.out.println(responseJson.getBody());
-			JSONArray jsonArray = responseJson.getBody().getArray();
 
-			ArrayList<GMessage> messageList = new ArrayList<GMessage>();
-
-			for(int i = 0; i<jsonArray.length(); i++){
-				JSONObject jsonObject = jsonArray.getJSONObject(i);
-				messageList.add(new GMessage(jsonObject.getString("message_text"), jsonObject.getString("movie_time"), jsonObject.getString("message_time"), jsonObject.getString("uname"), jsonObject.getString("groupname")));    
-		}
-			return messageList;
-
-		} catch (UnirestException e) {
-				e.printStackTrace();
-		}
-		return null;
-		
-	}
-	public void sendGroupMessage(String groupname, String uname, String message_text, String message_time, String movie_time){
-		try {
-			
-			HttpResponse<String> responseString = Unirest.post(hostAddrString + "groups/sendGroupMessage.php")
-					  .field("groupname", groupname)
-					  .field("uname",uname)
-					  .field("message_text", message_text)
-					  .field("message_time", message_time)
-					  .field("movie_time", movie_time)
-					  .asString();
-			System.out.println(responseString.getBody());
-		}
-		catch(UnirestException e){
-			e.printStackTrace();
-		}
-	}
 	
 	public static void main(String[] args) {
 //		//System.out.println(getGroupsAndMovies("doge"));
-		System.out.println(new GroupRequest().getGroupMems("doge"));
+		new GroupRequest().getOnlineGroupMems("group0");
 //		JSONObject jsonObject= getGroupMems("doge");
 //		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 //		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){

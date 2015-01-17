@@ -3,18 +3,10 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -30,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,7 +32,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import model.GMessage;
 import model.Group;
 import model.Movie;
 import model.User;
@@ -50,11 +40,11 @@ import org.controlsfx.dialog.Dialogs;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import tcp.FileReceiver;
 import tcp.GroupRequest;
 import view.GCell;
 import view.UCell;
-import config.Config;
+import config.Interface;
+import config.Profile;
 
 public class CinemaController implements Initializable {
 
@@ -92,17 +82,16 @@ public class CinemaController implements Initializable {
 	@FXML
 	ListView GListView;
 	@FXML
-	ListView GMessageListView;
-	@FXML
 	TextArea movieBriefTextArea;
-	@FXML
-	ProgressBar networkProgressBar;
+
 	@FXML
 	StackPane centerStackPane;
 	@FXML
+	StackPane innerStackPane;
+	@FXML
 	Pane currentMoviePane;
 
-	Timer groupMessageTimer = null;
+
 	GroupRequest groupRequest = new GroupRequest();
  	
 	Stage primaryStage;
@@ -110,48 +99,36 @@ public class CinemaController implements Initializable {
 	MediaPlayer mp;
 	File currentVideoFile = null;	
 	Movie currentMovie = null;
-	
-	String currentGroupName = null;	
-	User user = null;
-	private HashMap<String, Group> groupMap = new HashMap<String, Group>();
-	private HashMap<String, User> userMap = new HashMap<String, User>();
-	private Set<String> gStringSet = new HashSet<String>();
+
+
+
 	ObservableList observableList = FXCollections.observableArrayList();
-	private Set<String> uStringSet = new HashSet<String>();
+
 	ObservableList<User> observableList2 = FXCollections.observableArrayList();
-	
-	ObservableList<GMessage> observableList3 = null;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		networkProgressBar.setVisible(false);
+		
+		Interface.cinemaController = this;
+
 		
 		watchButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
-	        	
-	        	if(watchButton.getText()=="DOWNLOAD"){
-	        		receiveFromUser();
-	        		return;
-	        	}
-	        	System.out.println("you press watch");
 	        	
 	        	Platform.runLater(new Runnable(){
 
 					@Override
 					public void run() {
 						
-			        	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/CurrentMoviePane.fxml"));    
+			        	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/CinemaRoom.fxml"));    
 			    	    try {
 			    	        currentMoviePane = (Pane) fxmlLoader.load();
 			    	        CurrentMovieController currentMovieController = fxmlLoader.getController();
 			    	        if(currentMovie == null)
 			    	        	return;
-			    	        currentMovieController.setGroupName(currentGroupName);
-			    	        currentMovieController.setUserName(user.getUname());
-			    	        currentMovieController.setCenterStackPane(centerStackPane);
-			    	        currentMovieController.setMovieMediaPane(currentMovie);
-			    	    } catch (IOException e) {
+			    	        currentMovieController.setMovieMediaPane();
+			    	       } catch (IOException e) {
 			    	        throw new RuntimeException(e);
 			    	    }
 			    	    //centerStackPane.getChildren().get(0);
@@ -194,10 +171,9 @@ public class CinemaController implements Initializable {
 		}
 	}
 	
-	public void setUser(User user){
-		this.user = user;
-		unameLabel.setText(user.getUname());
-		userImageView.setImage(user.getMiddleImage());
+	public void setUser(){
+		unameLabel.setText(Profile.currentUser.getUname());
+		userImageView.setImage(Profile.currentUser.getMiddleImage());
 	}
 	
 	public void setThisStage(Stage stage){
@@ -208,7 +184,7 @@ public class CinemaController implements Initializable {
 		
 		boolean hasFirst = false;
 		
-		JSONObject jsonObject= groupRequest.getGroupMems("doge");
+		JSONObject jsonObject= groupRequest.getGroupMems(Profile.currentUser.getUname());
 		ArrayList<String> groupNameArrayList = new ArrayList<String>();
 		for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 			groupNameArrayList.add(iterator.next().toString());
@@ -237,16 +213,16 @@ public class CinemaController implements Initializable {
 				JSONObject userJsonObject = userJsonArray.getJSONObject(i);
 				User user = new User(userJsonObject.getString("uname"), userJsonObject.getString("ipAddr"));
 				userArrayList.add(user);
-				if(!userMap.containsKey(user.getUname()))
-					userMap.put(user.getUname(), user);
+				if(!Profile.userMap.containsKey(user.getUname()))
+					Profile.userMap.put(user.getUname(), user);
 			}
 			Group group = new Group(groupName, userArrayList, movie);	
 			if(hasFirst == false){
-				currentGroupName = groupName;
+				Profile.currentGroup = group;
 				hasFirst = true;
-				setGMessageListView();
+				
 			}
-			groupMap.put(groupName, group);
+			Profile.groupMap.put(groupName, group);
 		}
 		
 		
@@ -254,12 +230,20 @@ public class CinemaController implements Initializable {
 	}
 	
 	public void noMovie() {
-		setLabelVisibility(false);
-		movieTitleLabel.setText("");
-		movieBriefTextArea.setText("");
-		startTLabel.setText("");
-		endTLabel.setText("");
-		watchButton.setText("ADD NOW!");
+		if(moviePane.isVisible()){
+			moviePane.setVisible(false);
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/AddNewMovie.fxml"));
+			try {
+				BorderPane moviePane2 = fxmlLoader.load();
+				innerStackPane.getChildren().add(moviePane2);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			UploadController uploadController = fxmlLoader.getController();
+			
+		}
+		
 	}
 	
 	void addMovie(){
@@ -292,20 +276,22 @@ public class CinemaController implements Initializable {
 	
 	void setMoviePane(){
 
-		if(currentGroupName == null){
+		if(Profile.currentGroup == null){
 			noMovie();
 			return;
 		}
 		
-		
-		currentMovie = groupMap.get(currentGroupName).getMovie();
+		currentMovie = Profile.currentGroup.getMovie();
 		System.out.println("setcurrentMovie"+currentMovie);
 		
 		if( currentMovie == null){
 			noMovie();
-			
+			return;
 		}else{
-
+			if(!moviePane.isVisible()){
+				innerStackPane.getChildren().remove(innerStackPane.getChildren().size()-1);
+				moviePane.setVisible(true);
+			}
 			movieTitleLabel.setText(currentMovie.getMovieNameString());
 			movieBriefTextArea.setText(currentMovie.getMovieBriefString());
 			startTLabel.setText(currentMovie.getStartTimeString());
@@ -321,29 +307,10 @@ public class CinemaController implements Initializable {
 			
 			setLabelVisibility(true);
 			
-			Path path = Paths.get("resources/video/"+currentMovie.getMovieFileNameString()+".mp4");
-			if (!Files.exists(path)) {
-				watchButton.setText("DOWNLOAD");
-			}else{
-				watchButton.setText("WATCH");
-			}
+			
 		}
 	}
 	
-	void receiveFromUser(){
-		FileReceiver fileReceiver = new FileReceiver();
-		System.out.println("receive from ip" + Config.macAddrString);
-		Platform.runLater(new Runnable(){
-
-			@Override
-			public void run() {
-				networkProgressBar.setVisible(true);
-			}
-			
-		});
-		fileReceiver.receiveFromIP(currentMovie.getMovieOwnerIPString(), currentMovie.getMovieFileNameString(), networkProgressBar, currentMovie.getPort(),currentMovie.getFilesize());
-		
-	}
 	@SuppressWarnings("unchecked")
 	void setGListView(){
 		
@@ -351,7 +318,7 @@ public class CinemaController implements Initializable {
 			
 			@Override
 			public void run() {
-				JSONObject jsonObject= groupRequest.getGroupMems(user.getUname());
+				JSONObject jsonObject= groupRequest.getGroupMems(Profile.currentUser.getUname());
 				ArrayList<String> groupNameArrayList = new ArrayList<String>();
 				for(Iterator iterator = jsonObject.keys(); iterator.hasNext();){
 					groupNameArrayList.add(iterator.next().toString());
@@ -370,13 +337,10 @@ public class CinemaController implements Initializable {
 			    // http://code.makery.ch/blog/javafx-8-event-handling-examples/
 			    GListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			    	
-			    	System.out.println("observable list 3: " + observableList3.size());
-			    	groupMap.get(currentGroupName).setList(observableList3);
-			    	currentGroupName = newValue.toString();
-			     	System.out.println("ListView Selection Changed (selected: " + currentGroupName + ")");
+			    	Profile.currentGroup = Profile.groupMap.get(newValue.toString());
+			     	System.out.println("ListView Selection Changed (selected: " + Profile.currentGroup.getGroupName() + ")");
 			        int groupNum = GListView.getSelectionModel().getSelectedIndex();
 			        System.out.println("selected Group:"+groupNum);
-			        setGMessageListView();
 					setUListView();
 					setMoviePane();
 			    });
@@ -392,7 +356,7 @@ public class CinemaController implements Initializable {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				Group group = groupMap.get(currentGroupName);
+				Group group = Profile.groupMap.get(Profile.currentGroup.getGroupName());
 				ArrayList<User> userList = group.getUserList();
 
 			    observableList2.setAll(userList);
@@ -408,81 +372,7 @@ public class CinemaController implements Initializable {
 
 	}
 	
-	
-	public void setGMessageListView(){	
-		
-		if(groupMessageTimer!=null)
-			groupMessageTimer.cancel();
-		
-		Platform.runLater(new Runnable() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				observableList3 = groupMap.get(currentGroupName).getList();
-				GMessageListView.setItems(observableList3);
 
-			    System.out.println(" the items in [set] from map: " + groupMap.get(currentGroupName).getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
-			    
-			    GMessageListView.setCellFactory(new Callback<ListView<GMessage>, ListCell<GMessage>>() {
-			        @Override
-			        public ListCell<GMessage> call(ListView<GMessage> GMListView) {
-			            return new GMCell();
-			        }
-			    });
-			}
-		});
-		
-		groupMessageTimer = new Timer();
-		groupMessageTimer.schedule(
-			    new TimerTask() {
-
-			        @Override
-			        public void run() {
-			     //   	System.out.println("Current group:" + currentGroupName);
-			     //   	System.out.println("Receive new group messages last message time is:" + groupMap.get(currentGroupName).getLastMessageTime());
-			        	
-				    	ArrayList<GMessage> newMessageList = groupRequest.getGroupMessage(currentGroupName, groupMap.get(currentGroupName).getLastMessageTime());
-						if(!newMessageList.isEmpty()){	
-							groupMap.get(currentGroupName).setLastMessageTime(newMessageList.get(newMessageList.size()-1).getMessageTime());
-							Platform.runLater(new Runnable(){
-								@Override
-								public void run() {
-						//			System.out.println("Receive new group messages 2");
-						//			System.out.println("1 observableList in add new items " + observableList3);
-									observableList3.addAll(newMessageList);
-						//			System.out.println("observableList in add new items " + observableList3);
-									
-								}
-							});
-
-						}
-			        }
-			    }, 0, Config.RefreshGroupMessageRate);
-		
-
-	}
-	
-	public class GMCell extends ListCell<GMessage>{
-		
-		@Override
-		public void updateItem(GMessage gMessage, boolean empty){
-		    super.updateItem(gMessage,empty);
-		    if(gMessage != null) {
-		        GMData data = new GMData();
-		        Platform.runLater(new Runnable(){
-					@Override
-					public void run() {
-						data.setImage(userMap.get(gMessage.getUname()).getMiddleImage());
-				        data.setInfo(gMessage.getMessage());
-				        setGraphic(data.getBox());
-					}
-		        	
-		        });
-
-		    }
-		}
-
-	}
 
 
 	

@@ -18,10 +18,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import model.User;
 import tcp.UserRequest;
 import config.Config;
+import config.Profile;
+import config.Interface;
 
 public class LoginController implements Initializable{
 	
@@ -36,7 +37,6 @@ public class LoginController implements Initializable{
 	@FXML
 	private Label wrongLabel;
 	
-	Stage primaryStage = null;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -44,12 +44,12 @@ public class LoginController implements Initializable{
 		System.out.println(loginButton.getText());
 		try {
 			System.out.println("local IP addr:"+InetAddress.getLocalHost().getHostAddress());
-			Config.localAddrString = InetAddress.getLocalHost().getHostAddress();
-			if(System.getProperty("os.name").equals("Mac OS X")){
-				Config.macAddrString = Config.localAddrString;
-			}else{
-				Config.linuxAddrString = Config.localAddrString;
-			}
+//			Config.localAddrString = InetAddress.getLocalHost().getHostAddress();
+//			if(System.getProperty("os.name").equals("Mac OS X")){
+//				Config.macAddrString = Config.localAddrString;
+//			}else{
+//				Config.linuxAddrString = Config.localAddrString;
+//			}
 		} catch (UnknownHostException e1) {
 
 			e1.printStackTrace();
@@ -62,38 +62,33 @@ public class LoginController implements Initializable{
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 	        @Override
 	        public void handle(ActionEvent event) {
-	            primaryStage.getScene().setCursor(Cursor.WAIT);
+	            Interface.primaryStage.getScene().setCursor(Cursor.WAIT);
 	            System.out.println("You pressed login Button.");
 	            String uname = unameField.getText();
 	            String pword = pwordField.getText();
 	            UserRequest userRequest = new UserRequest();
 	            if( userRequest.userLogin(uname, pword, Config.localAddrString, true)){
-	            	//FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/MyLayout.fxml"));
 	            	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/Cinema.fxml"));
 	                
 	            	Pane GLayout = null;
 					try {
+						Profile.currentUser = new User(uname,Config.localAddrString);
 						GLayout = fxmlLoader.load();
-						//MyController myController = fxmlLoader.getController();
-//						myController.setUser(new User(uname,Config.localAddrString));
-//						myController.prepareGroups();
-//						myController.setGListView();
-//						myController.setThisStage(primaryStage);
 						CinemaController cinemaController = fxmlLoader.getController();
-						cinemaController.setUser(new User(uname,Config.localAddrString));
 						cinemaController.prepareGroups();
+						cinemaController.setUser();
 						cinemaController.setGListView();
-						primaryStage.setResizable(false);
-						primaryStage.setX(0);
-						primaryStage.setY(0);
-						primaryStage.setWidth(1280);
-						primaryStage.setHeight(724);
-						primaryStage.getScene().setCursor(Cursor.DEFAULT);
-						cinemaController.setThisStage(primaryStage);
+						Interface.primaryStage.setResizable(false);
+						Interface.primaryStage.setX(0);
+						Interface.primaryStage.setY(0);
+						Interface.primaryStage.setWidth(1280);
+						Interface.primaryStage.setHeight(724);
+						Interface.primaryStage.getScene().setCursor(Cursor.DEFAULT);
+						cinemaController.setThisStage(Interface.primaryStage);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-	            	primaryStage.setScene(new Scene(GLayout));
+					Interface.primaryStage.setScene(new Scene(GLayout));
 	            	
 	            }else{
 	            	wrongLabel.setVisible(true);
@@ -102,8 +97,5 @@ public class LoginController implements Initializable{
 	    });
 	}
 	
-	public void setThisStage(Stage stage){
-		this.primaryStage = stage;
-	}
 
 }
