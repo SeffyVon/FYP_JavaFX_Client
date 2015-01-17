@@ -31,8 +31,13 @@ public class FileSender extends Thread {
 		 ServerSocket serverSocket;
 		try {
 			serverSocket = new ServerSocket(portNum);
+<<<<<<< HEAD
 			
 			
+=======
+			
+			while(isOcuppied){
+>>>>>>> FETCH_HEAD
 				Socket socket = serverSocket.accept(); 
 				System.out.println("Accepted connection : " + socket); 
 				File transferFile = new File("resources/video/tosend/"+filenameString+".mp4"); // ("video/theAmazingSpiderMan.rmvb");//
@@ -49,10 +54,18 @@ public class FileSender extends Thread {
 				long time2 = System.currentTimeMillis();
 				System.out.println("File transfer complete"); 
 				System.out.println("speed(KB/s):"+transferFile.length()/(time2-time1));
+<<<<<<< HEAD
 			
 				
 				// prompt...
 			
+=======
+				isOcuppied = false;
+				
+				// prompt...
+				
+			}
+>>>>>>> FETCH_HEAD
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

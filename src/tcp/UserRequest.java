@@ -119,6 +119,7 @@ public class UserRequest {  // userLogin and userRegister
 
 	
 		
+<<<<<<< HEAD
 //		try {
 //			Config.localAddrString = InetAddress.getLocalHost().getHostAddress();
 //			if(System.getProperty("os.name").equals("Mac OS X")){
@@ -132,6 +133,21 @@ public class UserRequest {  // userLogin and userRegister
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
+=======
+		try {
+			Config.localAddrString = InetAddress.getLocalHost().getHostAddress();
+			if(System.getProperty("os.name").equals("Mac OS X")){
+				Config.macAddrString = Config.localAddrString;
+			}else{
+				Config.linuxAddrString = Config.localAddrString;
+			}
+			System.out.println("local IP addr:"+Config.macAddrString);
+			
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+>>>>>>> FETCH_HEAD
 		UserRequest userRequest= new UserRequest();
 		//System.out.println(userRequest.userLogin("doge","hello",Config.localAddrString));
 		//System.out.println(userRequest.userRegister("cate2","hello"));

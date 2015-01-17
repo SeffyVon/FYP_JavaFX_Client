@@ -23,21 +23,36 @@ public class ProgressBarSyn {
 		System.out.println("send Playing");
 		 if(currentMovieController!=null){
 			if(isPlaying)
+<<<<<<< HEAD
 				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "played", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
 			else {
 				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "paused", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+=======
+				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "Played", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+			else {
+				ChatClientEndpoint.sendGMessage(new GMessage("Sync", "Paused", "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+>>>>>>> FETCH_HEAD
 			}
 		 }
 	}
 	
 	public static void receiveGMessage(GMessage gMessage){
 		if(currentMovieController!=null){
+<<<<<<< HEAD
 			if(gMessage.getMessageText().equals("played") ){
 				receivePlaying(gMessage.getUname(), true);
 			}else if(gMessage.getMessageText().equals("paused")){
 				receivePlaying(gMessage.getUname(), false);
 			}else if(gMessage.getMessageText().equals("forwarded") || gMessage.getMessageText().equals("rewinded")){
 				receiveProgress(gMessage.getUname(),Double.parseDouble(gMessage.getMovieTime())); // Correspondent to String.valueOf(progress0)
+=======
+			if(gMessage.getMessageText().equals("Played") ){
+				receivePlaying(gMessage.getUname(), true);
+			}else if(gMessage.getMessageText().equals("Paused")){
+				receivePlaying(gMessage.getUname(), false);
+			}else if(gMessage.getMessageText().equals("Forwarded") || gMessage.getMessageText().equals("Rewinded")){
+				receiveProgress(gMessage.getUname(),Double.parseDouble(gMessage.getMovieTime()));
+>>>>>>> FETCH_HEAD
 			}
 		}
 	}
@@ -46,7 +61,11 @@ public class ProgressBarSyn {
 		
 		System.out.println("send Progress");
 		if(currentMovieController!=null){
+<<<<<<< HEAD
 			ChatClientEndpoint.sendGMessage(new GMessage("Sync", playBackMessage, String.valueOf(progress0), "",Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+=======
+			ChatClientEndpoint.sendGMessage(new GMessage("Sync", playBackMessage, String.valueOf(progress0), Profile.currentUser.getUname(), "", Profile.currentGroup.getGroupName()));
+>>>>>>> FETCH_HEAD
 			}
 	}
 	

@@ -127,7 +127,11 @@ public class CinemaController implements Initializable {
 			    	        CurrentMovieController currentMovieController = fxmlLoader.getController();
 			    	        if(currentMovie == null)
 			    	        	return;
+<<<<<<< HEAD
 			    	        currentMovieController.setMovieMediaPane();
+=======
+			    	        currentMovieController.setMovieMediaPane(currentMovie);
+>>>>>>> FETCH_HEAD
 			    	       } catch (IOException e) {
 			    	        throw new RuntimeException(e);
 			    	    }

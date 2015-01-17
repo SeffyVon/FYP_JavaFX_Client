@@ -90,6 +90,7 @@ public class CurrentMovieController implements Initializable{
 	ListView<User> UListView;
 	@FXML
 	public ProgressBar networkProgressBar;
+<<<<<<< HEAD
 	
 	String selectedUserName = null;
 
@@ -102,6 +103,18 @@ public class CurrentMovieController implements Initializable{
 	Timer groupMessageTimer = null;
 	double lastProgress = 0;
 	
+=======
+
+	
+	ObservableList<User> observableList2 = FXCollections.observableArrayList(); // user list
+	ObservableList<GMessage> observableList3 = FXCollections.observableArrayList(GMessage.extractor()); // group message list
+
+	public MediaPlayer mediaPlayer = null;
+	
+	Timer groupMessageTimer = null;
+	double lastProgress = 0;
+	
+>>>>>>> FETCH_HEAD
 	Image imagePause = new Image(getClass().getResourceAsStream("../resources/pause2.png"));
 	Image imagePlay = new Image(getClass().getResourceAsStream("../resources/play.png"));
 
@@ -111,12 +124,22 @@ public class CurrentMovieController implements Initializable{
 		System.out.println("init current movie controller");
 		Interface.currentMovieController = this;
 		setGMessageListView();
+<<<<<<< HEAD
+=======
+		setUListView();
+>>>>>>> FETCH_HEAD
 		Platform.runLater(new Runnable() {
 			
 			@Override
 			public void run() {
+<<<<<<< HEAD
 				movieTitleLabel.setText(Profile.currentGroup.getMovie().getMovieNameString());
 				groupName.setText(Profile.currentGroup.getGroupName());
+=======
+				groupName.setText(Profile.currentGroup.getGroupName());
+				networkProgressBar.setVisible(false);
+				downloadButton.setVisible(false);
+>>>>>>> FETCH_HEAD
 			}
 		});
 		
@@ -129,6 +152,7 @@ public class CurrentMovieController implements Initializable{
             	if(mediaPlayer!=null)
             		mediaPlayer.volumeProperty().setValue(0);
             	ProgressBarSyn.stopProgressSyn();
+<<<<<<< HEAD
         	//	ChatClientEndpoint.closeChatClientEndpoint();
             }
         });
@@ -155,6 +179,9 @@ public class CurrentMovieController implements Initializable{
             		System.out.println("here 2");
             		ChatClientEndpoint.sendGMessage(new GMessage("Download_Req", selectedUserName, "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
             	}
+=======
+        		ChatClientEndpoint.closeChatClientEndpoint();
+>>>>>>> FETCH_HEAD
             }
         });
 
@@ -194,7 +221,11 @@ public class CurrentMovieController implements Initializable{
 
 						@Override
 						protected Void call() throws Exception {
+<<<<<<< HEAD
 							ChatClientEndpoint.sendGMessage(new GMessage("Chat", messageTextField.getText(),"" ,new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+=======
+							ChatClientEndpoint.sendGMessage(new GMessage("Chat", messageTextField.getText(),"" ,new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()),Profile.currentUser.getUname(), "group0"));
+>>>>>>> FETCH_HEAD
 							Platform.runLater(new Runnable() {
 								
 								@Override
@@ -214,6 +245,7 @@ public class CurrentMovieController implements Initializable{
 	
 	
 	@SuppressWarnings("unchecked")
+<<<<<<< HEAD
 	void setMovieMediaPane(){
 		Path path = Paths.get("resources/video/"+Profile.currentGroup.getMovie().getMovieFileNameString()+".mp4");
 	
@@ -224,11 +256,29 @@ public class CurrentMovieController implements Initializable{
 		moviePaneVisible(true);
 		System.out.println("mediaPlayer filename:" + Profile.currentGroup.getMovie().getMovieFileNameString());
 		Media mv = new Media(new File("resources/video/"+Profile.currentGroup.getMovie().getMovieFileNameString()+".mp4").toURI().toString());
+=======
+	void setMovieMediaPane(Movie currentMovie){
+		Path path = Paths.get("resources/video/"+currentMovie.getMovieFileNameString()+".mp4");
+		if (!Files.exists(path)) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					unavailableLabel.setVisible(true);
+					downloadButton.setVisible(true);
+				}
+			});
+			return;
+		}
+		
+		System.out.println("mediaPlayer filename:" + currentMovie.getMovieFileNameString());
+		Media mv = new Media(new File("resources/video/"+currentMovie.getMovieFileNameString()+".mp4").toURI().toString());
+>>>>>>> FETCH_HEAD
 		mediaPlayer = new MediaPlayer(mv);
 		mediaPlayer.setAutoPlay(false);
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
+<<<<<<< HEAD
 
 				unavailableLabel.setVisible(false);
 		        volumeSlider.setValue(80);
@@ -237,6 +287,17 @@ public class CurrentMovieController implements Initializable{
 			}
 		});
 
+=======
+
+				unavailableLabel.setVisible(false);
+				movieTitleLabel.setText(currentMovie.getMovieNameString());
+		        volumeSlider.setValue(80);
+		        mediaPlayer.setVolume(0.8);
+				mediaView.setMediaPlayer(mediaPlayer);
+			}
+		});
+
+>>>>>>> FETCH_HEAD
 		ProgressBarSyn.beginProgressSyn(this);
 		
 		
@@ -304,7 +365,16 @@ public class CurrentMovieController implements Initializable{
             }
         });
 		
+<<<<<<< HEAD
 
+=======
+		downloadButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+        		ChatClientEndpoint.sendGMessage(new GMessage("Download_Req", Profile.currentGroup.getMovie().getOwnerNameString(), "", "", Profile.currentUser.getUname(), Profile.currentGroup.getGroupName()));
+            }
+        });
+>>>>>>> FETCH_HEAD
 		
 		soundButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -330,9 +400,15 @@ public class CurrentMovieController implements Initializable{
                 	double currentProgress = timeSlider.getValue();
                 	System.out.println("End:"+currentProgress);
                 	if(currentProgress>lastProgress)
+<<<<<<< HEAD
                 		ProgressBarSyn.sendProgress("forwarded", timeSlider.getValue());
                 	else if(currentProgress<lastProgress)
                 		ProgressBarSyn.sendProgress("rewinded", timeSlider.getValue());
+=======
+                		ProgressBarSyn.sendProgress("Forwarded", timeSlider.getValue());
+                	else if(currentProgress<lastProgress)
+                		ProgressBarSyn.sendProgress("Rewinded", timeSlider.getValue());
+>>>>>>> FETCH_HEAD
                 	
                 	setProgress(currentProgress);  	
                 }
@@ -350,10 +426,26 @@ public class CurrentMovieController implements Initializable{
 	
 
 	
+<<<<<<< HEAD
 	public void setUListView(ArrayList<User> userList){	
 			
 				observableList2.setAll(userList);
 				
+=======
+	public void setUListView(){	
+		
+				JSONObject jsonObject = GroupRequest.getOnlineGroupMems(Profile.currentGroup.getGroupName());
+				
+				ArrayList<User> userList = Profile.currentGroup.getUserList();
+				ArrayList<User> userList2 = new ArrayList<User>();
+				for(User user:userList){
+					if(jsonObject.get(user.getUname()) != null && jsonObject.get(user.getUname()).equals("y")){
+						userList2.add(user);
+					}
+				}
+				
+				observableList2.setAll(userList2);
+>>>>>>> FETCH_HEAD
 			    UListView.setItems(observableList2);
 			    UListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
 			        @Override
@@ -361,6 +453,7 @@ public class CurrentMovieController implements Initializable{
 			            return new UCell();
 			        }
 			    });
+<<<<<<< HEAD
 			    
 			    UListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			    	System.out.println("select" + newValue.toString());
@@ -496,6 +589,93 @@ public class CurrentMovieController implements Initializable{
 				}
 			}
 		});
+=======
+
+
 	}
+	
+	public void setGMessageListView(){	
+		
+		if(groupMessageTimer!=null)
+			groupMessageTimer.cancel();
+		
+		ChatClientEndpoint.createChatClientEndpoint(observableList3);
+		
+		Platform.runLater(new Runnable() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void run() {
+			
+				GMessageListView.setItems(observableList3);
+
+			    System.out.println(" SET Observable List " + Profile.currentGroup.getList() + " from GMessage "  + GMessageListView.getItems() + GMessageListView.getItems().size());
+			    GMessageListView.setCellFactory((ListView<GMessage> l) -> new GMCell());
+			}
+		});
+		
+	
+
+	}
+	
+	public class GMCell extends ListCell<GMessage>{
+		@Override
+		public void updateItem(GMessage gMessage, boolean empty){
+			
+		    super.updateItem(gMessage,empty);
+		    if(!empty && (gMessage != null)) {
+		    	//System.out.println("Observable list size"+ observableList3.size()+gMessage.getInterpretText());
+		        Platform.runLater(new Runnable(){
+					@Override
+					public void run() {
+						 setText(gMessage.getInterpretText());
+					}
+		        });
+
+		    }else{
+		    	Platform.runLater(new Runnable(){
+						@Override
+						public void run() {
+							setText(null);
+						}
+		    	});
+
+		    }
+		}
+
+	}
+
+	public void setPlay() {
+        Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				 playButton.setGraphic(new ImageView(imagePause));
+				 playButton.setText("Pause");
+				 mediaPlayer.play();
+			}
+		});
+		
+	}
+
+
+	public void setPause() {
+        Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				 playButton.setGraphic(new ImageView(imagePlay));	 
+				 playButton.setText("Play");
+				 mediaPlayer.pause();
+			}
+		});
+		
+	}
+	
+	public void setProgress(double progress){
+		Duration duration = mediaPlayer.getMedia().getDuration();
+		mediaPlayer.seek(duration.multiply(progress / 100.0));
+		
+>>>>>>> FETCH_HEAD
+	}
+	
+   
 
 }

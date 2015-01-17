@@ -19,7 +19,11 @@ public class GMessage {
 	
 	public GMessage(String message_type, String message_text, String movie_time, String message_time, String uname, String groupname) {
 		uNameProperty().set(uname);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> FETCH_HEAD
 		groupNameProperty().set(groupname);
 		movieTimeProperty().set(movie_time);
 		messageTimeProperty().set(message_time);
@@ -34,6 +38,7 @@ public class GMessage {
     
     public String getUname() {
 		return uNameProperty().getValue();
+<<<<<<< HEAD
 	}
     
     public String getMessageText() {
@@ -48,6 +53,22 @@ public class GMessage {
 		return movieTimeProperty().getValue();
 	}
     
+=======
+	}
+    
+    public String getMessageText() {
+		return messageTextProperty().getValue();
+	}
+    
+    public String getMessageType() {
+		return messageTypeProperty().getValue();
+	}
+    
+    public String getMovieTime() {
+		return movieTimeProperty().getValue();
+	}
+    
+>>>>>>> FETCH_HEAD
 
     public String getGroupName(){
     	return groupNameProperty().getValue();
@@ -103,6 +124,7 @@ public class GMessage {
     }
  
     public String getInterpretText(){
+<<<<<<< HEAD
     	if(messageTypeProperty().getValue().equals("Sync")){
     		if(messageTextProperty().equals("Forwarded")|| messageTextProperty().equals("Rewined"))
     			return "[Sync] "+ getUname() + " " + getMessageText() + " at " + getMovieTime() + ".";
@@ -125,6 +147,24 @@ public class GMessage {
     
     
     
+=======
+    	if(messageTypeProperty().getValue()=="Sync"){
+    		return getUname() + " " + getMessageText() + ".";
+    	}else if(messageTypeProperty().getValue()=="Chat"){
+    		return getUname() + ":" + getMessageText();
+    	}else if(messageTypeProperty().getValue()=="Status"){
+    		return getUname() + " " + getMessageText() + ".";
+    	}else if(messageTypeProperty().getValue()=="Download_Req"){
+    		return getUname()  + "asked to download from you.";
+    	}else if(messageTypeProperty().getValue()=="Download_Ack"){
+    		return getUname() + "agreed to let you download. Start downloading...";
+    	}else{
+			return "";
+		}
+    }
+    
+    
+>>>>>>> FETCH_HEAD
     public String encode() throws EncodeException {
     	
   
